@@ -11,8 +11,9 @@ module.exports = {
         port: 8000,
         allowedHosts: [
             'localhost:9000'
-        ]
+        ],
     },
+
     module: {
         //через babel пропускаем все js файлы
         rules: [
