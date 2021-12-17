@@ -1,5 +1,5 @@
 <template>
-<v-flex>
+<div>
     <v-card class="ma-4" v-for="oneNews in news"
             :key="oneNews.id"
     >
@@ -10,7 +10,7 @@
             </div>
         </v-card-title>
     </v-card>
-</v-flex>
+</div>
 
 
 </template>
