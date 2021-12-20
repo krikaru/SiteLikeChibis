@@ -7,6 +7,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
     state:{
         news,
+        username
     },
 
     mutations: {
@@ -14,7 +15,9 @@ export default new Vuex.Store({
 
     actions: {
         async addUserAction({commit, state}, user) {
-            await userApi.add(user)
+            const result = await userApi.add(user)
+            const data = await result.json()
+
         }
     }
 })

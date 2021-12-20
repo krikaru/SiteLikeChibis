@@ -11,8 +11,6 @@
         </v-card-title>
     </v-card>
 </div>
-
-
 </template>
 
 <script>

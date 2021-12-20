@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons' rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <title>Title</title>
+</head>
+<body>
+
+<div data-app="true" class="v-application v-application--is-ltr theme--light">
+    <div class="v-application--wrap">
+        <header class="v-sheet theme--light v-toolbar v-toolbar--prominent v-app-bar v-app-bar--fixed v-app-bar--shrink-on-scroll" data-booted="true" style="height: 128px; font-size: 1.5rem; margin-top: 0px; transform: translateY(0px); left: 0px; right: 0px;">
+            <div class="v-toolbar__image">
+                <div class="v-image v-responsive theme--light" style="height: 128px;">
+                    <div class="v-responsive__sizer" style="padding-bottom: 56.25%;"></div>
+                    <div class="v-image__image v-image__image--cover" style="background-image: linear-gradient(to right top, rgba(19, 84, 122, 0.5), rgba(128, 208, 199, 0.8)), url(&quot;https://picsum.photos/1920/1080?random&quot;); background-position: center center;"></div>
+                    <div class="v-responsive__content" style="width: 1920px;"></div>
+                </div>
+            </div>
+            <div class="v-toolbar__content" style="height: 128px;">
+                <div class="v-toolbar__title" style="cursor: pointer;" th:onclick="|window.location.href='/'|">Chibis</div>
+                <div class="spacer"></div>
+                <a href="/registration" class="v-btn v-btn--is-elevated v-btn--has-bg theme--light v-size--default">
+                    <span class="material-icons">
+                        account_circle
+                    </span>
+                </a>
+            </div>
+        </header>
+        <main class="v-main" data-booted="true" style="padding: 128px 0px 0px;">
+            <div class="v-main__wrap">
+                <main class="v-main" data-booted="true" style="padding: 128px 0px 0px;">
+                    <div class="v-main__wrap">
+                        <div class="layout align-center justify-center row">
+                            <div class="flex xs6">
+                                <div class="v-card v-sheet theme--light">
+                                    <div class="v-card__text">
+                                        <h1 align="center">Вход</h1>
+                                    </div>
+                                    <form th:action="@{/auth}" method="post" class="v-form">
+                                        <div class="container">
+                                            <div class="layout column">
+                                                <div class="flex">
+                                                    <div class="v-input theme--light v-text-field v-text-field--is-booted">
+                                                        <div class="v-input__control">
+                                                            <div class="v-input__slot">
+                                                                <div class="v-text-field__slot">
+                                                                    <input required="required" name="username" id="input-28" type="text" placeholder="Логин">
+                                                                </div>
+                                                            </div>
+                                                            <div class="v-text-field__details">
+                                                                <div class="v-messages theme--light">
+                                                                    <div class="v-messages__wrapper"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="flex">
+                                                    <div class="v-input theme--light v-text-field v-text-field--is-booted">
+                                                        <div class="v-input__control">
+                                                            <div class="v-input__slot">
+                                                                <div class="v-text-field__slot">
+                                                                    <input required="required" name="password" id="input-34" type="text" placeholder="Пароль">
+                                                                </div>
+                                                            </div>
+                                                            <div class="v-text-field__details">
+                                                                <div class="v-messages theme--light">
+                                                                    <div class="v-messages__wrapper"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <button type="submit" class="v-btn v-btn--is-elevated v-btn--has-bg theme--light v-size--default">
+                                                    Войти
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>

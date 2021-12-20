@@ -11,15 +11,23 @@
             ></v-img>
         </template>
 
-        <v-app-bar-nav-icon></v-app-bar-nav-icon>
+        <v-toolbar-title style="cursor: pointer" v-if="this.$route.path !== '/'" @click="$router.push('/')" >
+            Chibis
+        </v-toolbar-title>
+        <v-toolbar-title style="cursor: pointer" v-else>
+            Chibis
+        </v-toolbar-title>
 
-        <v-toolbar-title>Title</v-toolbar-title>
-
+        <v-btn text>
+            registration
+        </v-btn>
         <v-spacer></v-spacer>
 
-        <v-btn>
+        <v-btn icon >
             <router-link to="/registration">
-                Registration
+                <span class="material-icons">
+                        account_circle
+                    </span>
             </router-link>
         </v-btn>
 

@@ -8,7 +8,6 @@
                 <news-unit></news-unit>
             </v-flex>
         </v-layout>
-
     </v-container>
 </template>
 

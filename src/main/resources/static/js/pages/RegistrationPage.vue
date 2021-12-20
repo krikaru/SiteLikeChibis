@@ -1,10 +1,7 @@
 <template>
-    <v-app>
-        <app-bar></app-bar>
         <v-main>
             <registration-form></registration-form>
         </v-main>
-    </v-app>
 </template>
 
 <script>
