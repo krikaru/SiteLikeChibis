@@ -1,5 +1,5 @@
 <template>
-    <v-layout align-center justify-center row>
+    <v-layout align-start justify-center row>
         <v-flex xs6>
             <v-card>
                 <v-card-text>
@@ -48,7 +48,7 @@
                                         required
                                 ></v-text-field>
                             </v-flex>
-                            <v-btn @click="save">
+                            <v-btn @click="save" >
                                 Зарегистрироваться
                             </v-btn>
                         </v-layout>
