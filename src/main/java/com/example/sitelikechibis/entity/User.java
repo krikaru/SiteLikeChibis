@@ -1,10 +1,12 @@
 package com.example.sitelikechibis.entity;
 
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -17,9 +19,24 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @NotBlank(message = "Username cannot be empty")
+    @Length(min=2, max=8)
+    @Pattern(regexp = "^[a-zA-Z1-9]+$")
     private String username;
+
+    @NotBlank(message = "Name cannot be empty")
+    @Length(max=25)
+    @Pattern(regexp = "/^[a-zа-яё -]+$/i")
     private String name;
+
+    @NotBlank(message = "Password cannot be empty")
+    @Length(min=6, max=15)
+    @Pattern(regexp = "^\\S+$")
     private String password;
+
+    @NotBlank(message = "Email cannot be empty")
+    @Email(message = "Email is not correct")
     private String email;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)

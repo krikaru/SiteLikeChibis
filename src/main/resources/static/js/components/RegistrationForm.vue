@@ -5,13 +5,16 @@
                 <v-card-text>
                     <h1 align="center">Регистрация</h1>
                 </v-card-text>
-                <v-form>
+                <v-form
+                        ref="form"
+                        v-model="valid"
+                >
                     <v-container>
                         <v-layout column>
                             <v-flex>
                                 <v-text-field
                                         v-model="username"
-                                        :rules="[rules.required, rules.min]"
+                                        :rules="usernameRules"
                                         label="Логин"
                                         required
                                 ></v-text-field>
@@ -21,7 +24,7 @@
                                 <v-text-field
                                         v-model="name"
                                         label="Ваше имя"
-                                        :rules="[rules.required, rules.range]"
+                                        :rules="nameRules"
                                         required
                                 ></v-text-field>
                             </v-flex>
@@ -30,7 +33,7 @@
                                 <v-text-field
                                         v-model="password"
                                         :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-                                        :rules="[rules.required, rules.min]"
+                                        :rules="passwordRules"
                                         :type="show1 ? 'text' : 'password'"
                                         label="Пароль"
                                         hint="At least 8 characters"
@@ -44,11 +47,13 @@
                                 <v-text-field
                                         v-model="email"
                                         label="E-mail"
-                                        :rules="[rules.required, rules.email]"
+                                        :rules="emailRules"
                                         required
                                 ></v-text-field>
                             </v-flex>
-                            <v-btn @click="save" >
+                            <v-btn
+                                    :disabled="!valid"
+                                    @click="save" >
                                 Зарегистрироваться
                             </v-btn>
                         </v-layout>
@@ -65,17 +70,32 @@
 
         data() {
             return {
+                valid: true,
                 show1: false,
                 username: '',
+                usernameRules: [
+                    username => !!username || 'Введите логин!',
+                    username => username.length >= 2 && username.length <=8 || 'Логин должен быть не меньше 2 и не больше 8 символов',
+                    username => this.checkUsername(username) || 'В логине должны быть только латинские буквы и цифры'
+                ],
                 name: '',
+                nameRules: [
+                    name => !!name || 'Введите своё имя!',
+                    name => name.length <= 25 || 'Имя должно быть не больше 25 символов',
+                    name => /^[a-zа-яё -]+$/i.test(name) || 'Имя должно содержать только буквы'
+                ],
                 password: '',
+                passwordRules: [
+                    password => !!password || 'Введите пароль!',
+                    password => password.length <= 15 || 'Пароль должен быть не больше 25 символов',
+                    password => password.length >= 6 || 'Пароль должен быть не меньше 6 символов',
+                    password => /^\S+$/.test(password) || 'В пароле не должно быть пробелов'
+                ],
                 email: '',
-                rules: {
-                    required: value => !!value || 'Необходимо заполнить.',
-                    min: v => v.length >= 2 || 'Min 8 characters',
-                    range: username => username.length >=3 && username.length<=10 || 'Логин должен быть больше 3, но меньше 10 знаков',
-                    email: email => this.checkEmail(email) || 'Не валидный емэйл'
-                },
+                emailRules: [
+                    email => !!email || 'Введите email!',
+                    email => this.checkEmail(email) || 'Неверный формат'
+                ]
             }
         },
         watch: {
@@ -111,6 +131,11 @@
 
                 window.location.href = 'http://localhost:9000/auth'
                 // this.$router.push('auth')
+            },
+
+            checkUsername(username) {
+                const regExpUsername = /^[a-zA-Z1-9]+$/
+                return regExpUsername.test(String(username))
             },
 
             checkEmail(email) {
