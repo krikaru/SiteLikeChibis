@@ -1,13 +1,17 @@
 package com.example.sitelikechibis.controller;
 
+import com.example.sitelikechibis.controller.util.ControllerUtils;
 import com.example.sitelikechibis.entity.User;
+import com.example.sitelikechibis.entity.dto.RegistrationFormDto;
 import com.example.sitelikechibis.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("user")
@@ -30,18 +34,19 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(
-            @Valid @RequestBody User user,
+    public RegistrationFormDto createUser(
+            @Valid @RequestBody RegistrationFormDto registrationForm,
             BindingResult bindingResult
             ) {
 
+        Map<String, String> errors = new HashMap<>();
         if (bindingResult.hasErrors()) {
-            System.out.println(user);
-            System.out.println(bindingResult.getModel().entrySet());
-            return null;
+            Map<String, String> validateErrors = ControllerUtils.getErrors(bindingResult);
+            errors.putAll(validateErrors);
+            return new RegistrationFormDto(null, errors);
         }
 
-        return userService.create(user);
+        return userService.create(registrationForm, errors);
     }
 
     @PostMapping("{id}")

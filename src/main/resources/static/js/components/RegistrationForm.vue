@@ -1,81 +1,107 @@
 <template>
-    <v-layout align-start justify-center row>
-        <v-flex xs6>
-            <v-card>
-                <v-card-text>
-                    <h1 align="center">Регистрация</h1>
-                </v-card-text>
-                <v-form
-                        ref="form"
-                        v-model="valid"
-                >
-                    <v-container>
-                        <v-layout column>
-                            <v-flex>
-                                <v-text-field
-                                        v-model="username"
-                                        :rules="usernameRules"
-                                        label="Логин"
-                                        required
-                                ></v-text-field>
-                            </v-flex>
+    <v-container fluid>
+        <v-layout align-center justify-center row>
+            <v-flex xs6>
+                <v-alert v-if="errors" type="error">
+                    {{this.errors}}
+                </v-alert>
+                <v-card>
+                    <v-card-text>
+                        <h1 align="center">Регистрация</h1>
+                    </v-card-text>
+                    <v-form
+                            ref="registrationForm"
+                            v-model="valid"
+                    >
+                        <v-container>
+                            <v-layout column>
+                                <v-flex>
+                                    <v-text-field
+                                            v-model="username"
+                                            :rules="usernameRules"
+                                            label="Логин"
+                                            required
+                                            validate-on-blur
+                                    ></v-text-field>
+                                </v-flex>
 
-                            <v-flex>
-                                <v-text-field
-                                        v-model="name"
-                                        label="Ваше имя"
-                                        :rules="nameRules"
-                                        required
-                                ></v-text-field>
-                            </v-flex>
+                                <v-flex>
+                                    <v-text-field
+                                            v-model="name"
+                                            label="Ваше имя"
+                                            :rules="nameRules"
+                                            required
+                                    ></v-text-field>
+                                </v-flex>
 
-                            <v-flex>
-                                <v-text-field
-                                        v-model="password"
-                                        :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-                                        :rules="passwordRules"
-                                        :type="show1 ? 'text' : 'password'"
-                                        label="Пароль"
-                                        hint="At least 8 characters"
-                                        counter
-                                        @click:append="show1 = !show1"
-                                        required
-                                ></v-text-field>
-                            </v-flex>
+                                <v-flex>
+                                    <v-text-field
+                                            v-model="password"
+                                            :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                                            :rules="passwordRules"
+                                            :type="showPassword ? 'text' : 'password'"
+                                            label="Пароль"
+                                            hint="At least 8 characters"
+                                            counter
+                                            @click:append="showPassword = !showPassword"
+                                            required
+                                    ></v-text-field>
+                                </v-flex>
 
-                            <v-flex>
-                                <v-text-field
-                                        v-model="email"
-                                        label="E-mail"
-                                        :rules="emailRules"
-                                        required
-                                ></v-text-field>
-                            </v-flex>
-                            <v-btn
-                                    :disabled="!valid"
-                                    @click="save" >
-                                Зарегистрироваться
-                            </v-btn>
-                        </v-layout>
-                    </v-container>
-                </v-form>
-            </v-card>
-        </v-flex>
-    </v-layout>
+                                <v-flex>
+                                    <v-text-field
+                                            ref="confirmPasswordRef"
+                                            v-model="confirmPassword"
+                                            :append-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                                            :rules="confirmPasswordRules"
+                                            :type="showConfirmPassword ? 'text' : 'password'"
+                                            label="Подтвердите пароль"
+                                            hint="At least 8 characters"
+                                            counter
+                                            @click:append="showConfirmPassword = !showConfirmPassword"
+                                            required
+                                    ></v-text-field>
+                                </v-flex>
+
+                                <v-flex>
+                                    <v-text-field
+                                            v-model="email"
+                                            label="E-mail"
+                                            :rules="emailRules"
+                                            required
+                                    ></v-text-field>
+                                </v-flex>
+                                <v-btn
+                                        :disabled="!valid"
+                                        @click="save" >
+                                    Зарегистрироваться
+                                </v-btn>
+                            </v-layout>
+                        </v-container>
+                    </v-form>
+                </v-card>
+            </v-flex>
+        </v-layout>
+    </v-container>
+
 </template>
 
 <script>
-    import { mapActions } from 'vuex'
+    import { mapState, mapActions } from 'vuex'
     export default {
+
+        computed: mapState(['registrationForm']),
 
         data() {
             return {
+                errors: null,
                 valid: true,
-                show1: false,
+                showPassword: false,
+                showConfirmPassword: false,
                 username: '',
                 usernameRules: [
                     username => !!username || 'Введите логин!',
-                    username => username.length >= 2 && username.length <=8 || 'Логин должен быть не меньше 2 и не больше 8 символов',
+                    username => username.length >= 3 && username.length <=12 || 'Логин должен быть не меньше 3 и не больше 12 символов',
                     username => this.checkUsername(username) || 'В логине должны быть только латинские буквы и цифры'
                 ],
                 name: '',
@@ -91,6 +117,11 @@
                     password => password.length >= 6 || 'Пароль должен быть не меньше 6 символов',
                     password => /^\S+$/.test(password) || 'В пароле не должно быть пробелов'
                 ],
+                confirmPassword: '',
+                confirmPasswordRules: [
+                    pas2 => !!pas2 || 'Введите повторный пароль!',
+                    pas2 => this.password === pas2 || 'Пароли не совпадают'
+                ],
                 email: '',
                 emailRules: [
                     email => !!email || 'Введите email!',
@@ -99,6 +130,7 @@
             }
         },
         watch: {
+
             username: function (newUsername) {
                 this.username = newUsername
             },
@@ -106,7 +138,7 @@
                 this.name = newName
             },
             password: function (newPassword) {
-                this.password = newPassword
+                this.$refs.confirmPasswordRef.validate();
             },
             email: function (newEmail) {
                 this.email = newEmail
@@ -115,22 +147,39 @@
         },
         methods: {
             ...mapActions(['addUserAction']),
-            save() {
-                const user = {
-                    username: this.username,
-                    name: this.name,
-                    password: this.password,
-                    email: this.email
+            async save() {
+                const registrationForm = {
+                    user : {
+                            username: this.username,
+                            name: this.name,
+                            password: this.password,
+                            email: this.email
+                        },
+                    confirmPassword: this.confirmPassword
                 }
-                this.addUserAction(user)
 
-                this.username = ''
-                this.name = ''
-                this.password = ''
-                this.email = ''
+                console.log('registration form . vue')
+                console.log(registrationForm.confirmedPassword)
+                console.log(registrationForm)
+                await this.addUserAction(registrationForm)
 
-                window.location.href = 'http://localhost:9000/auth'
-                // this.$router.push('auth')
+
+                const form = this.registrationForm
+
+
+                if (form.user.id !== null) {
+                    this.username = ''
+                    this.name = ''
+                    this.password = ''
+                    this.confirmPassword = ''
+                    this.email = ''
+                    this.errors = null
+                    window.location.href = 'http://localhost:9000/auth'
+                } else {
+                    this.errors = form.errors.usernameError
+                    this.password = ''
+                    this.confirmPassword = ''
+                }
             },
 
             checkUsername(username) {

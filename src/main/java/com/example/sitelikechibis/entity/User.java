@@ -21,17 +21,17 @@ public class User implements UserDetails {
     private Long id;
 
     @NotBlank(message = "Username cannot be empty")
-    @Length(min=2, max=8)
+    @Length(min=3, max=12)
     @Pattern(regexp = "^[a-zA-Z1-9]+$")
     private String username;
 
     @NotBlank(message = "Name cannot be empty")
     @Length(max=25)
-    @Pattern(regexp = "/^[a-zа-яё -]+$/i")
+    @Pattern(regexp = "^[a-zа-яё -]+$", flags = Pattern.Flag.CASE_INSENSITIVE)
     private String name;
 
     @NotBlank(message = "Password cannot be empty")
-    @Length(min=6, max=15)
+//    @Length(min=6, max=15, message = "bla bla")
     @Pattern(regexp = "^\\S+$")
     private String password;
 
