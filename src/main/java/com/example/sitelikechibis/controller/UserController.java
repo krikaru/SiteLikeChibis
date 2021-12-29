@@ -34,7 +34,7 @@ public class UserController {
     }
 
     @PostMapping
-    public RegistrationFormDto createUser(
+    public RegistrationFormDto registration(
             @Valid @RequestBody RegistrationFormDto registrationForm,
             BindingResult bindingResult
             ) {
@@ -43,10 +43,10 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             Map<String, String> validateErrors = ControllerUtils.getErrors(bindingResult);
             errors.putAll(validateErrors);
-            return new RegistrationFormDto(null, errors);
+            return new RegistrationFormDto(registrationForm.getUser(), errors);
         }
 
-        return userService.create(registrationForm, errors);
+        return userService.registration(registrationForm, errors);
     }
 
     @PostMapping("{id}")

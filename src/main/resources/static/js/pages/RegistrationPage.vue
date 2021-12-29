@@ -5,10 +5,9 @@
 </template>
 
 <script>
-    import AppBar from 'components/appBar/AppBar.vue'
     import RegistrationForm from 'components/RegistrationForm.vue'
     export default {
-        components: { AppBar, RegistrationForm }
+        components: { RegistrationForm }
     }
 </script>
 

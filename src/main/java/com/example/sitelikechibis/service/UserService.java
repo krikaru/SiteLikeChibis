@@ -28,7 +28,7 @@ public class UserService implements UserDetailsService {
         return userRepo.findAll();
     }
 
-    public RegistrationFormDto create(RegistrationFormDto registrationForm, Map<String, String> errors) {
+    public RegistrationFormDto registration(RegistrationFormDto registrationForm, Map<String, String> errors) {
         User user = registrationForm.getUser();
         String confirmPassword = registrationForm.getConfirmPassword();
 

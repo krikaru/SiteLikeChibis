@@ -9,6 +9,13 @@
                     <v-card-text>
                         <h1 align="center">Регистрация</h1>
                     </v-card-text>
+
+                    <form method="post" action="/login">
+                        <input type="text" name="username" placeholder="username">
+                        <input type="password" name="password" placeholder="password">
+                        <input type="submit">
+                    </form>
+
                     <v-form
                             ref="registrationForm"
                             v-model="valid"
@@ -168,13 +175,13 @@
 
 
                 if (form.user.id !== null) {
+                    window.location.href = 'http://localhost:9000/auth'
                     this.username = ''
                     this.name = ''
                     this.password = ''
                     this.confirmPassword = ''
                     this.email = ''
                     this.errors = null
-                    window.location.href = 'http://localhost:9000/auth'
                 } else {
                     this.errors = form.errors.usernameError
                     this.password = ''
