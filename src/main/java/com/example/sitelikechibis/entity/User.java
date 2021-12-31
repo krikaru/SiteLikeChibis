@@ -1,6 +1,11 @@
 package com.example.sitelikechibis.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
+import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,11 +18,17 @@ import java.util.List;
 import java.util.Set;
 
 @Data
+@ToString(of = {"name", "email"})
 @Entity
 @Table(name = "usr")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id"
+)
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonView(Views.Id.class)
     private Long id;
 
     @NotBlank(message = "Username cannot be empty")
@@ -28,6 +39,7 @@ public class User implements UserDetails {
     @NotBlank(message = "Name cannot be empty")
     @Length(max=25)
     @Pattern(regexp = "^[a-zа-яё -]+$", flags = Pattern.Flag.CASE_INSENSITIVE)
+    @JsonView(Views.FullProfile.class)
     private String name;
 
     @NotBlank(message = "Password cannot be empty")
@@ -37,6 +49,7 @@ public class User implements UserDetails {
 
     @NotBlank(message = "Email cannot be empty")
     @Email(message = "Email is not correct")
+    @JsonView(Views.FullProfile.class)
     private String email;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
@@ -47,6 +60,7 @@ public class User implements UserDetails {
     private boolean active;
 
     @OneToMany(mappedBy = "author")
+    @JsonView(Views.FullProfile.class)
     private List<News> news;
 
     @Override

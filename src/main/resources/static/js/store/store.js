@@ -7,7 +7,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
     state:{
         news,
-        username,
+        principal,
         registrationForm: {
             errors: null,
             user: null

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -67,5 +68,9 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found");
         }
         return user;
+    }
+
+    public Optional<User> findById(Long id) {
+        return userRepo.findById(id);
     }
 }
