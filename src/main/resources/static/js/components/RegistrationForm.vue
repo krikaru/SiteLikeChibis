@@ -10,12 +10,6 @@
                         <h1 align="center">Регистрация</h1>
                     </v-card-text>
 
-                    <form method="post" action="/login">
-                        <input type="text" name="username" placeholder="username">
-                        <input type="password" name="password" placeholder="password">
-                        <input type="submit">
-                    </form>
-
                     <v-form
                             ref="registrationForm"
                             v-model="valid"

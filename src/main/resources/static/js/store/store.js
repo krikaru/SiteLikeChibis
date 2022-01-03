@@ -1,16 +1,27 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import userApi from 'api/user'
+import json from "vue-resource/src/http/interceptor/json";
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
     state:{
-        news,
-        principal,
+        rowNews,
+        rowPrincipal,
         registrationForm: {
             errors: null,
             user: null
+        }
+    },
+
+    getters: {
+        principal: state => {
+            return JSON.parse(state.rowPrincipal)
+        },
+
+        news: state => {
+            return JSON.parse(state.rowNews)
         }
     },
 

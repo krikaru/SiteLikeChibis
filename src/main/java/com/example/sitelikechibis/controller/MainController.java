@@ -22,6 +22,7 @@ public class MainController {
     private final NewsService newsService;
     private final UserService userService;
     private final ObjectWriter userWriter;
+    private final ObjectWriter newsWriter;
 
     public MainController(NewsService newsService, UserService userService, ObjectMapper mapper) {
         this.newsService = newsService;
@@ -32,12 +33,15 @@ public class MainController {
 
         this.userWriter = objectMapper
                 .writerWithView(Views.FullProfile.class);
+        this.newsWriter = objectMapper
+                .writerWithView(Views.FullNews.class);
     }
 
     @GetMapping
     public String main(Model model, @AuthenticationPrincipal User principal) throws JsonProcessingException {
         List<News> news = newsService.findAll();
-        model.addAttribute("news", news);
+        String serializedNews = newsWriter.writeValueAsString(news);
+        model.addAttribute("news", serializedNews);
         if (principal != null) {
             User userFromDb = userService.findById(principal.getId()).get();
             String serializedProfile = userWriter.writeValueAsString(userFromDb);

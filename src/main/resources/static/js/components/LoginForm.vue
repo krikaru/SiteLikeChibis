@@ -4,7 +4,7 @@
             <v-flex xs6>
 
                 <v-alert v-if="this.$route.query.error" type="error">
-                    Не корректный логин или пароль.
+                    Некорректный логин или пароль.
                 </v-alert>
 
                 <v-card>
@@ -33,8 +33,8 @@
                                             :rules="[password => !!password || 'Введите пароль!']"
                                             label="Пароль"
                                             name="password"
+                                            type="password"
                                     >
-
                                     </v-text-field>
                                 </v-flex>
 

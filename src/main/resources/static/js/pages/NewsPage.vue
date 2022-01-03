@@ -15,12 +15,12 @@
 </template>
 
 <script>
-    import {mapState} from 'vuex'
+    import {mapGetters} from 'vuex'
     import NewsUnit from 'components/NewsUnit.vue'
     import NewsSorter from 'components/NewsSorter.vue'
     export default {
         components: {NewsSorter, NewsUnit},
-        computed: mapState(['news'])
+        computed: mapGetters(['news'])
     }
 </script>
 

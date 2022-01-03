@@ -19,14 +19,14 @@ public class News implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @JsonView(Views.FullProfile.class)
+    @JsonView(Views.FullNews.class)
     private String head;
-    @JsonView(Views.FullProfile.class)
+    @JsonView(Views.FullNews.class)
     private String text;
-    @JsonView(Views.FullProfile.class)
+    @JsonView(Views.FullNews.class)
     private LocalDateTime creationDate;
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonView(Views.FullProfile.class)
+    @JsonView(Views.FullNews.class)
     private User author;
 }

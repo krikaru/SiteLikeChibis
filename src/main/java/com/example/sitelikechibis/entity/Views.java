@@ -5,6 +5,7 @@ public final class Views {
 
     public interface IdName extends Id {}
 
-    public interface FullProfile extends IdName{
-    }
+    public interface FullProfile extends IdName{}
+
+    public interface FullNews extends IdName{}
 }
