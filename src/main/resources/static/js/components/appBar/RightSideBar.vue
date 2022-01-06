@@ -31,7 +31,7 @@
                         <v-list-item
                                 v-for="(item, index) in profileMenu()"
                                 :key="index"
-                                @click="$route.path === item.link ? '' : $router.push(item.link)"
+                                @click="clickProfileMenu(item)"
                         >
                             <v-list-item-icon>
                                 <v-icon v-text="item.icon"></v-icon>
@@ -39,19 +39,6 @@
                             <v-list-item-title>
                                 {{ item.title }}
                             </v-list-item-title>
-                        </v-list-item>
-
-                        <v-divider v-if="this.principal"></v-divider>
-
-                        <v-list-item v-if="this.principal">
-                            <v-list-item-icon>
-                                <v-icon v-text="'logout'"></v-icon>
-                            </v-list-item-icon>
-                            <v-list-item-content>
-                                <form @submit="checkForm()" action="/logout" method="post">
-                                    <input type="submit" value="Выйти">
-                                </form>
-                            </v-list-item-content>
                         </v-list-item>
                     </v-list-item-group>
                 </v-list>
@@ -61,7 +48,7 @@
 </template>
 
 <script>
-    import { mapGetters } from 'vuex'
+    import { mapGetters, mapActions } from 'vuex'
     export default {
         name: "RightSideBar",
 
@@ -81,17 +68,27 @@
                     {title: 'Корзина', link: '/shopcart', icon: 'shopping_cart'},
                     {title: 'Мои публикации', link: '/mynews', icon: 'article'},
                     {title: 'Настройки', link: '/settings', icon: 'settings'},
+                    {title: 'Выйти', link: '/logout', icon: 'logout'},
                 ]
             }
         },
 
         methods: {
+            ...mapActions(['logoutAction']),
             profileMenu() {
                 return this.principal ? this.profileMenuItems : this.nullProfileMenuItems
             },
 
-            checkForm() {
-                return true
+            clickProfileMenu(item) {
+                if (item.link === '/logout') {
+                    this.logoutAction()
+                    window.location.href = '/'
+                }
+                else if (this.$route.path !== item.link) {
+                    return this.$router.push(item.link)
+                } else {
+                    return ''
+                }
             }
         }
 

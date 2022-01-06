@@ -3,8 +3,8 @@
         <v-layout align-center justify-center row>
             <v-flex xs6>
 
-                <v-alert v-if="this.$route.query.error" type="error">
-                    Некорректный логин или пароль.
+                <v-alert v-if="loginError" type="error">
+                    {{this.loginError}}
                 </v-alert>
 
                 <v-card>
@@ -13,7 +13,7 @@
                     </v-card-text>
 
                     <v-form
-                            method="post" action="/login"
+                            id="loginForm"
                             ref="loginForm"
                             v-model="valid"
                     >
@@ -24,6 +24,7 @@
                                             :rules="[username => !!username || 'Введите логин!']"
                                             label="Логин"
                                             name="username"
+                                            v-model="username"
                                     >
                                     </v-text-field>
                                 </v-flex>
@@ -32,7 +33,7 @@
                                     <v-text-field
                                             :rules="[password => !!password || 'Введите пароль!']"
                                             label="Пароль"
-                                            name="password"
+                                            v-model="password"
                                             type="password"
                                     >
                                     </v-text-field>
@@ -40,7 +41,7 @@
 
                                 <v-btn
                                         :disabled="!valid"
-                                        type="submit"
+                                        @click="login"
                                 >
                                     Войти
                                 </v-btn>
@@ -55,11 +56,29 @@
 </template>
 
 <script>
+    import { mapState, mapActions } from 'vuex'
     export default {
+
         name: "LoginForm",
         data() {
             return {
                 valid: false,
+                username: '',
+                password: '',
+            }
+        },
+        computed: mapState(['loginError']),
+
+        methods: {
+            ...mapActions(['loginAction']),
+            async login() {
+                let loginForm = new FormData
+                loginForm.append('username', this.username)
+                loginForm.append('password', this.password)
+                await this.loginAction(loginForm)
+                if (!this.loginError) {
+                    window.location.href = '/'
+                }
             }
         },
     }

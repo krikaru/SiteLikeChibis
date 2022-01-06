@@ -20,7 +20,11 @@
     import LoginForm from 'components/LoginForm.vue';
     export default {
         name: "LoginPage",
-        components: {LoginForm}
+        components: { LoginForm },
+        beforeRouteLeave(to, from, next) {
+            this.$store.state.loginError = null
+            next()
+        }
     }
 </script>
 
