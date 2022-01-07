@@ -10,7 +10,7 @@ Vue.use(VueRouter)
 const routes = [
     { path: '/', component: NewsPage},
     { path: '/registration', component: RegistrationPage},
-    { path: '/login', component: LoginPage},
+    { path: '/login/:activated?', component: LoginPage},
     { path: '/profile', component: ProfilePage},
     { path: '*', component: NewsPage}
 ]

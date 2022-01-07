@@ -20,6 +20,12 @@
                 </template>
                 <v-list>
                     <v-list-item v-if="this.principal">
+                        <v-list-item-avatar>
+                            <img
+                                    :src="`/img/${this.principal.userpic}`"
+                                    alt="John"
+                            >
+                        </v-list-item-avatar>
                         <v-list-item-content>
                             <v-list-item-title>{{this.principal ? this.principal.name : 'Гость'}}</v-list-item-title>
                         </v-list-item-content>
@@ -48,12 +54,12 @@
 </template>
 
 <script>
-    import { mapGetters, mapActions } from 'vuex'
+    import { mapState, mapActions } from 'vuex'
     export default {
         name: "RightSideBar",
 
         computed: {
-            ...mapGetters(['principal']),
+            ...mapState(['principal']),
 
         },
 

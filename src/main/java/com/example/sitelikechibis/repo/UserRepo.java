@@ -16,4 +16,8 @@ public interface UserRepo extends JpaRepository<User, Long> {
 
     @EntityGraph(attributePaths = {"roles"})
     User findByUsername(String s);
+
+    Optional<User> findByActivationCode(String activationCode);
+
+    boolean existsByEmail(String email);
 }

@@ -2,7 +2,6 @@
     <v-container fluid>
         <v-layout align-center justify-center row>
             <v-flex xs6>
-
                 <v-alert v-if="loginError" type="error">
                     {{this.loginError}}
                 </v-alert>

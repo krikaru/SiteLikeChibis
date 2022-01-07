@@ -31,6 +31,7 @@
                                             v-model="name"
                                             label="Ваше имя"
                                             :rules="nameRules"
+                                            validate-on-blur
                                             required
                                     ></v-text-field>
                                 </v-flex>
@@ -45,6 +46,7 @@
                                             hint="At least 8 characters"
                                             counter
                                             @click:append="showPassword = !showPassword"
+                                            validate-on-blur
                                             required
                                     ></v-text-field>
                                 </v-flex>
@@ -60,6 +62,7 @@
                                             hint="At least 8 characters"
                                             counter
                                             @click:append="showConfirmPassword = !showConfirmPassword"
+                                            validate-on-blur
                                             required
                                     ></v-text-field>
                                 </v-flex>
@@ -69,10 +72,12 @@
                                             v-model="email"
                                             label="E-mail"
                                             :rules="emailRules"
+                                            hint="На указанный e-mail будет выслана ссылка для подтверждения регистрации"
+                                            validate-on-blur
                                             required
                                     ></v-text-field>
                                 </v-flex>
-                                <v-btn
+                                <v-btn class="mt-6"
                                         :disabled="!valid"
                                         @click="save" >
                                     Зарегистрироваться
@@ -84,7 +89,6 @@
             </v-flex>
         </v-layout>
     </v-container>
-
 </template>
 
 <script>
@@ -169,7 +173,7 @@
 
 
                 if (form.user.id !== null) {
-                    window.location.href = 'http://localhost:9000/auth'
+                    await this.$router.push('login')
                     this.username = ''
                     this.name = ''
                     this.password = ''
@@ -177,9 +181,12 @@
                     this.email = ''
                     this.errors = null
                 } else {
-                    this.errors = form.errors.usernameError
-                    this.password = ''
+                    this.errors = form.errors.usernameError || form.errors.uniqueEmailError
                     this.confirmPassword = ''
+                    if (form.errors.uniqueEmailError) {
+                        this.email = ''
+                    } else if (form.errors.usernameError)
+                        this.username = ''
                 }
             },
 

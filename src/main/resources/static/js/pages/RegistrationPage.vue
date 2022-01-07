@@ -7,7 +7,12 @@
 <script>
     import RegistrationForm from 'components/RegistrationForm.vue'
     export default {
-        components: { RegistrationForm }
+        components: { RegistrationForm },
+        beforeRouteLeave(to, from, next) {
+            this.$store.state.loginError = null
+            this.activatedStatus = null
+            next()
+        }
     }
 </script>
 

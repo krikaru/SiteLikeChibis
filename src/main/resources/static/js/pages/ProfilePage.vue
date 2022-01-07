@@ -1,33 +1,59 @@
 <template>
-    <v-main style="padding: 150px 0px 0px">
-        <v-container fluid>
-            <v-layout>
-                <v-file-input
-                        v-model="userpic"
-                        label="File input"
-                        :rules="[pic => !!pic || 'should'] "
-                        filled
-                        prepend-icon="mdi-camera"
-                ></v-file-input>
-                <v-btn
-                        @click = "submitUserpic"
-                >
-                    Добавить
-                </v-btn>
+    <v-main style="padding: 150px 10px 10px">
+        <v-container>
+            <v-layout align-start justify-space-between row>
+                <v-flex xs3>
+                    <v-card>
+                        <v-img
+                                :src="`/img/${this.principal.userpic}`">
+                        </v-img>
+                        <v-card-title>
+                            {{this.principal.name}}
+                        </v-card-title>
+                        <v-card-text>
+                            E-mail: {{this.principal.email}}
+                        </v-card-text>
+                        <v-divider></v-divider>
+                        <v-list-item-group>
+
+                            <v-list-item
+
+                            >
+                                <v-list-item-icon>
+                                    <v-icon v-text="'settings'"></v-icon>
+                                </v-list-item-icon>
+                                <v-list-item-title>
+                                    Настройка
+                                </v-list-item-title>
+                            </v-list-item>
+                        </v-list-item-group>
+                    </v-card>
+
+                </v-flex>
+                <v-flex xs8>
+                    <v-card>
+                        <v-card-title style="background-color: #ff9363">
+                            Ваши заявки
+                        </v-card-title>
+                        <v-divider></v-divider>
+                        <v-card-text>У вас пока нет заявок</v-card-text>
+                    </v-card>
+                </v-flex>
             </v-layout>
         </v-container>
     </v-main>
 </template>
 
 <script>
-    import { mapActions } from 'vuex'
+    import { mapState, mapActions } from 'vuex'
     export default {
         name: "ProfilePage",
         data() {
             return {
-                userpic: '',
+                userpic: ''
             }
         },
+        computed: mapState(['principal']),
         methods: {
             ...mapActions(['addUserpicAction']),
             submitUserpic() {

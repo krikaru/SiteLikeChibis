@@ -1,5 +1,6 @@
 package com.example.sitelikechibis.config;
 
+import com.example.sitelikechibis.config.util.RestAuthenticationFailureHandler;
 import com.example.sitelikechibis.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -30,17 +32,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .antMatcher("/**").authorizeRequests()
-                .antMatchers("/", "/login/**", "/js/**", "/error**", "/registration", "/user", "/login").permitAll()
+                .antMatchers("/", "/login/**", "/js/**", "/error**", "/registration", "/user", "/img/**", "/activate/*").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
                 .loginPage("/login")
                 .failureUrl("/login?error=true")
+                .failureHandler(authenticationFailureHandler())
                 .permitAll()
                 .and()
                 .logout().logoutSuccessUrl("/").permitAll()
                 .and()
                 .csrf().disable();
+    }
+
+    @Bean
+    public AuthenticationFailureHandler authenticationFailureHandler() {
+        return new RestAuthenticationFailureHandler();
     }
 
     @Bean

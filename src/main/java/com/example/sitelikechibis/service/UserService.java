@@ -13,15 +13,18 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService implements UserDetailsService {
     private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
+    private final MailService mailSender;
 
-    public UserService(UserRepo userRepo, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepo userRepo, PasswordEncoder passwordEncoder, MailService mailSender) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
+        this.mailSender = mailSender;
     }
 
 
@@ -31,30 +34,48 @@ public class UserService implements UserDetailsService {
 
     public RegistrationFormDto registration(RegistrationFormDto registrationForm, Map<String, String> errors) {
         User user = registrationForm.getUser();
-        String confirmPassword = registrationForm.getConfirmPassword();
+
+        boolean isExistsEmail = userRepo.existsByEmail(user.getEmail());
+        if (isExistsEmail) {
+            errors.put("uniqueEmailError", "Аккаунт с таким email уже существует");
+            return new RegistrationFormDto(user, errors);
+        }
 
         User userFromDb = userRepo.findByUsername(user.getUsername());
-
         if (userFromDb == null) {
+            String confirmPassword = registrationForm.getConfirmPassword();
             if (!confirmPassword.equals(user.getPassword())) {
                 errors.put("confirmPasswordError", "Пароли не совпадают");
                 return new RegistrationFormDto(user, errors);
             }
 
-            user.setActive(true);
+            user.setActive(false);
             user.getRoles().add(Role.ADMIN);
+            user.setActivationCode(UUID.randomUUID().toString());
             user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-            return new RegistrationFormDto(userRepo.save(user), errors);
+            User savedUser = userRepo.save(user);
+
+            sendMessage(savedUser);
+
+            return new RegistrationFormDto(savedUser, errors);
         } else {
-                errors.put("usernameError", "Такой логин уже существует. Придумайте другой.");
-           return new RegistrationFormDto(user, errors);
+            errors.put("usernameError", "Такой логин уже существует. Придумайте другой.");
+            return new RegistrationFormDto(user, errors);
         }
     }
 
-    public User update(User userFromDb, User user) {
-        userFromDb.setPassword(user.getPassword());
-        return userRepo.save(userFromDb);
+    private void sendMessage(User user) {
+        String message = String.format(
+                "Здравствуйте, %s! \n" +
+                        "Добро пожаловать на сайт компании ООО ЧИБИС. Для завершения регистрации и подтверждения вашей почты пройдите по этой ссылке: http://localhost:9000/activate/%s",
+                user.getName(), user.getActivationCode()
+        );
+        mailSender.send(user.getEmail(), "Activation code", message);
+    }
+
+    public User update(User updatePrincipal) {
+        return userRepo.save(updatePrincipal);
     }
 
     public void delete(User user) {
@@ -72,5 +93,17 @@ public class UserService implements UserDetailsService {
 
     public Optional<User> findById(Long id) {
         return userRepo.findById(id);
+    }
+
+    public boolean findByActivationCode(String activationCode) {
+        Optional<User> activatedUserOpt = userRepo.findByActivationCode(activationCode);
+        if (activatedUserOpt.isPresent()) {
+            User activatedUser = activatedUserOpt.get();
+            activatedUser.setActivationCode(null);
+            activatedUser.setActive(true);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

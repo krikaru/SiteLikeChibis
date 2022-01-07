@@ -1,0 +1,1 @@
+alter table usr add activation_code varchar(255);

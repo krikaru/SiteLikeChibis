@@ -12,8 +12,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Controller
@@ -39,9 +42,7 @@ public class MainController {
 
     @GetMapping
     public String main(Model model, @AuthenticationPrincipal User principal) throws JsonProcessingException {
-        List<News> news = newsService.findAll();
-        String serializedNews = newsWriter.writeValueAsString(news);
-        model.addAttribute("news", serializedNews);
+
         if (principal != null) {
             User userFromDb = userService.findById(principal.getId()).get();
             String serializedProfile = userWriter.writeValueAsString(userFromDb);
@@ -53,4 +54,13 @@ public class MainController {
         return "index";
     }
 
+    @GetMapping("/activate/{activationCode}")
+    public String activation(@PathVariable String activationCode) {
+        boolean isActivated = userService.findByActivationCode(activationCode);
+        if (isActivated) {
+            return "redirect:/login/success";
+        } else {
+            return "redirect:/login/failure";
+        }
+    }
 }

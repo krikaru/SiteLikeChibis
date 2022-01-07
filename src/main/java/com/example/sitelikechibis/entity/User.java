@@ -1,7 +1,6 @@
 package com.example.sitelikechibis.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
@@ -28,7 +27,6 @@ import java.util.Set;
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonView(Views.Id.class)
     private Long id;
 
     @NotBlank(message = "Username cannot be empty")
@@ -38,7 +36,7 @@ public class User implements UserDetails {
 
     @NotBlank(message = "Name cannot be empty")
     @Length(max=25)
-    @Pattern(regexp = "^[a-zа-яё -]+$", flags = Pattern.Flag.CASE_INSENSITIVE)
+    @Pattern(regexp = "^[a-zA-Zа-яА-ЯёЁ -]+$", flags = Pattern.Flag.CASE_INSENSITIVE)
     @JsonView(Views.FullProfile.class)
     private String name;
 
@@ -58,10 +56,14 @@ public class User implements UserDetails {
     private Set<Role> roles = new HashSet<>();
 
     private boolean active;
+    private String activationCode;
 
     @OneToMany(mappedBy = "author")
     @JsonView(Views.FullProfile.class)
     private List<News> news;
+
+    @JsonView(Views.FullProfile.class)
+    private String userpic;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

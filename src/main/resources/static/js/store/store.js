@@ -9,22 +9,12 @@ Vue.use(Vuex)
 export default new Vuex.Store({
     state:{
         rowNews,
-        rowPrincipal,
+        principal: JSON.parse(rowPrincipal),
         registrationForm: {
             errors: null,
             user: null
         },
         loginError: null
-    },
-
-    getters: {
-        principal: state => {
-            return JSON.parse(state.rowPrincipal)
-        },
-
-        news: state => {
-            return JSON.parse(state.rowNews)
-        }
     },
 
     mutations: {
@@ -59,15 +49,19 @@ export default new Vuex.Store({
         async loginAction({commit, state}, loginForm) {
 
             try{
-                await userApi.login(loginForm)
+                const result = await userApi.login(loginForm)
+                state.loginError = null
             } catch (e) {
-                if (e.status === 404) {
-                    state.loginError = 'Некорректный логин или пароль.'
-                } else if (e.status === 200) {
-                    state.loginError = null
+
+                console.log(e.body.error)
+                if (e.body.error ==='Bad credentials') {
+                    state.loginError = 'Неверный пароль.'
+                } else if (e.body.error === 'User is disabled') {
+                    state.loginError = 'Аккаунт не подтвержден. Для активации необходимо пройти по ссылке в письме.'
                 } else {
-                    state.loginError = 'Неизвестная ошибка. Попробуйте войти позже.'
+                    state.loginError = 'Неизвестная ошибка. Попробуйте зайти позже.'
                 }
+
             }
         },
 

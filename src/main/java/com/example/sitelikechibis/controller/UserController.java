@@ -49,14 +49,6 @@ public class UserController {
         return userService.registration(registrationForm, errors);
     }
 
-    @PostMapping("{id}")
-    public User updateUser(
-            @PathVariable("id") User userFromDb,
-            @RequestBody User user)
-    {
-        return userService.update(userFromDb, user);
-    }
-
     @DeleteMapping("{id}")
     public void deleteUser(@PathVariable("id") User user) {
         userService.delete(user);
