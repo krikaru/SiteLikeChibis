@@ -1,8 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import userApi from 'api/user'
-import profileApi from 'api/profile'
-import xhr from "vue-resource/src/http/client/xhr";
 
 Vue.use(Vuex)
 
@@ -14,7 +12,8 @@ export default new Vuex.Store({
             errors: null,
             user: null
         },
-        loginError: null
+        loginError: null,
+        updateError: null
     },
 
     mutations: {
@@ -27,9 +26,25 @@ export default new Vuex.Store({
             state.loginError = value
         },
         loginMutation(state, loginForm) {
-            console.log("sef")
-            console.log(loginForm)
             state.rowPrincipal = loginForm
+        },
+        updateProfileMutation(state, updatedUserInfo) {
+            if (updatedUserInfo.errors === null) {
+                switch (updatedUserInfo.nameAttribute) {
+                    case 'name':
+                        state.principal.name = updatedUserInfo.updatedUser.name
+                        break
+                    case 'password':
+                        state.principal.password = updatedUserInfo.updatedUser.password
+                        break
+                    case 'email':
+                        state.principal.email = updatedUserInfo.updatedUser.email
+                        break
+                }
+            } else {
+                state.updateError = updatedUserInfo.errors
+            }
+
         }
     },
 
@@ -41,7 +56,7 @@ export default new Vuex.Store({
         },
 
         async addUserpicAction({commit, state}, userpic) {
-            const result = await profileApi.addUserpic(userpic)
+            const result = await userApi.addUserpic(userpic)
             const data = await result.json()
             return data;
         },
@@ -63,6 +78,12 @@ export default new Vuex.Store({
                 }
 
             }
+        },
+
+        async updateProfileAction({commit, state}, updatedUserInfo) {
+            const result = await userApi.updateUser(updatedUserInfo)
+            const data = await result.json()
+            await commit('updateProfileMutation', data)
         },
 
         async logoutAction({commit, state}) {

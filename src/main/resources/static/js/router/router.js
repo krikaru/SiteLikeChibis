@@ -4,6 +4,7 @@ import NewsPage from "pages/NewsPage.vue";
 import RegistrationPage from "pages/RegistrationPage.vue";
 import LoginPage from "pages/LoginPage.vue";
 import ProfilePage from "pages/ProfilePage.vue";
+import SettingsPage from "pages/SettingsPage.vue";
 
 Vue.use(VueRouter)
 
@@ -11,7 +12,10 @@ const routes = [
     { path: '/', component: NewsPage},
     { path: '/registration', component: RegistrationPage},
     { path: '/login/:activated?', component: LoginPage},
-    { path: '/profile', component: ProfilePage},
+    { path: '/profile/:id', component: ProfilePage,
+        children: [
+            { path: 'settings', component: SettingsPage},
+        ]},
     { path: '*', component: NewsPage}
 ]
 

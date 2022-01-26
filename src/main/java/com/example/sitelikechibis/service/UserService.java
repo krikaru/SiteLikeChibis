@@ -3,6 +3,7 @@ package com.example.sitelikechibis.service;
 import com.example.sitelikechibis.entity.Role;
 import com.example.sitelikechibis.entity.User;
 import com.example.sitelikechibis.entity.dto.RegistrationFormDto;
+import com.example.sitelikechibis.entity.dto.UpdatedAttributeUserDto;
 import com.example.sitelikechibis.repo.UserRepo;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -74,8 +75,24 @@ public class UserService implements UserDetailsService {
         mailSender.send(user.getEmail(), "Activation code", message);
     }
 
-    public User update(User updatePrincipal) {
-        return userRepo.save(updatePrincipal);
+    public User update(User user, UpdatedAttributeUserDto updatedUser) {
+        switch (updatedUser.getNameAttribute()) {
+            case "name":
+                user.setName(updatedUser.getUpdatedUser().getName());
+                break;
+            case "password":
+                user.setPassword(updatedUser.getUpdatedUser().getPassword());
+                break;
+            case "email":
+                user.setEmail(updatedUser.getUpdatedUser().getEmail());
+                break;
+            default:
+                break;
+        }
+
+        userRepo.save(user);
+
+        return user;
     }
 
     public void delete(User user) {

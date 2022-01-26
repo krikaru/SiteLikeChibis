@@ -1,6 +1,7 @@
 <template>
     <v-main style="padding: 150px 10px 10px">
-        <v-container>
+        <router-view></router-view>
+        <v-container v-if="this.$route.path === `/profile/${this.principal.id}`">
             <v-layout align-start justify-space-between row>
                 <v-flex xs3>
                     <v-card>
@@ -17,7 +18,7 @@
                         <v-list-item-group>
 
                             <v-list-item
-
+                                @click="$router.push(`/profile/${this.principal.id}/settings`)"
                             >
                                 <v-list-item-icon>
                                     <v-icon v-text="'settings'"></v-icon>
@@ -41,7 +42,9 @@
                 </v-flex>
             </v-layout>
         </v-container>
+
     </v-main>
+
 </template>
 
 <script>

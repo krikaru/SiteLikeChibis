@@ -70,10 +70,10 @@
                     {title: 'Войти', link: '/login', icon: 'login'},
                 ],
                 profileMenuItems: [
-                    {title: 'Мой профиль', link: '/profile', icon: 'person'},
+                    {title: 'Мой профиль', link: '/profile/7', icon: 'person'},
                     {title: 'Корзина', link: '/shopcart', icon: 'shopping_cart'},
                     {title: 'Мои публикации', link: '/mynews', icon: 'article'},
-                    {title: 'Настройки', link: '/settings', icon: 'settings'},
+                    {title: 'Настройки', link: '/profile/7/settings', icon: 'settings'},
                     {title: 'Выйти', link: '/logout', icon: 'logout'},
                 ]
             }

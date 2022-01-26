@@ -1,6 +1,5 @@
 package com.example.sitelikechibis.controller;
 
-import com.example.sitelikechibis.entity.News;
 import com.example.sitelikechibis.entity.User;
 import com.example.sitelikechibis.entity.Views;
 import com.example.sitelikechibis.service.NewsService;
@@ -14,10 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 @Controller
 @RequestMapping("/")
@@ -35,7 +30,7 @@ public class MainController {
                 .setConfig(mapper.getSerializationConfig());
 
         this.userWriter = objectMapper
-                .writerWithView(Views.FullProfile.class);
+                .writerWithView(Views.BaseUserInfo.class);
         this.newsWriter = objectMapper
                 .writerWithView(Views.FullNews.class);
     }

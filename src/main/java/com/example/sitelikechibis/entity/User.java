@@ -1,6 +1,7 @@
 package com.example.sitelikechibis.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
@@ -27,6 +28,7 @@ import java.util.Set;
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonView(Views.BaseUserInfo.class)
     private Long id;
 
     @NotBlank(message = "Username cannot be empty")
@@ -34,20 +36,23 @@ public class User implements UserDetails {
     @Pattern(regexp = "^[a-zA-Z1-9]+$")
     private String username;
 
-    @NotBlank(message = "Name cannot be empty")
-    @Length(max=25)
-    @Pattern(regexp = "^[a-zA-Zа-яА-ЯёЁ -]+$", flags = Pattern.Flag.CASE_INSENSITIVE)
-    @JsonView(Views.FullProfile.class)
+    @NotBlank(message = "Имя не должно быть пустым", groups = {MarkerInterfaces.NameUpdate.class})
+    @Length(message = "Длина имени должна быть не меньше 3 и не больше 25 символов", max=25, min = 3, groups = {MarkerInterfaces.NameUpdate.class})
+    @Pattern(message = "Имя может содержать только буквы русского и английского алфавита",
+            regexp = "^[a-zA-Zа-яА-ЯёЁ-]+$",
+            flags = Pattern.Flag.CASE_INSENSITIVE, groups = {MarkerInterfaces.NameUpdate.class})
+    @JsonView(Views.BaseUserInfo.class)
     private String name;
 
-    @NotBlank(message = "Password cannot be empty")
-//    @Length(min=6, max=15, message = "bla bla")
-    @Pattern(regexp = "^\\S+$")
+    @NotBlank(message = "Пароль должен быть заполнен", groups = {MarkerInterfaces.PasswordUpdate.class})
+    @Length(min=6, max=15, message = "Длина пароля должна быть не меньше 6 и не больше 15 символов", groups = {MarkerInterfaces.PasswordUpdate.class})
+    @Pattern(regexp = "^\\S+$", groups = {MarkerInterfaces.PasswordUpdate.class})
+    @JsonIgnore
     private String password;
 
-    @NotBlank(message = "Email cannot be empty")
-    @Email(message = "Email is not correct")
-    @JsonView(Views.FullProfile.class)
+    @NotBlank(message = "Email должен быть заполнен", groups = {MarkerInterfaces.EmailUpdate.class})
+    @Email(message = "Неверный формат email", groups = {MarkerInterfaces.EmailUpdate.class})
+    @JsonView(Views.BaseUserInfo.class)
     private String email;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
@@ -59,10 +64,10 @@ public class User implements UserDetails {
     private String activationCode;
 
     @OneToMany(mappedBy = "author")
-    @JsonView(Views.FullProfile.class)
+    @JsonView(Views.UpdatedUserInfo.class)
     private List<News> news;
 
-    @JsonView(Views.FullProfile.class)
+    @JsonView(Views.BaseUserInfo.class)
     private String userpic;
 
     @Override
