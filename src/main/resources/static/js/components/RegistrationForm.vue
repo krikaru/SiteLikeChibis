@@ -22,7 +22,6 @@
                                             :rules="usernameRules"
                                             label="Логин"
                                             required
-                                            validate-on-blur
                                     ></v-text-field>
                                 </v-flex>
 
@@ -31,7 +30,6 @@
                                             v-model="name"
                                             label="Ваше имя"
                                             :rules="nameRules"
-                                            validate-on-blur
                                             required
                                     ></v-text-field>
                                 </v-flex>
@@ -46,7 +44,6 @@
                                             hint="At least 8 characters"
                                             counter
                                             @click:append="showPassword = !showPassword"
-                                            validate-on-blur
                                             required
                                     ></v-text-field>
                                 </v-flex>
@@ -62,7 +59,6 @@
                                             hint="At least 8 characters"
                                             counter
                                             @click:append="showConfirmPassword = !showConfirmPassword"
-                                            validate-on-blur
                                             required
                                     ></v-text-field>
                                 </v-flex>
@@ -73,7 +69,6 @@
                                             label="E-mail"
                                             :rules="emailRules"
                                             hint="На указанный e-mail будет выслана ссылка для подтверждения регистрации"
-                                            validate-on-blur
                                             required
                                     ></v-text-field>
                                 </v-flex>
@@ -163,14 +158,9 @@
                     confirmPassword: this.confirmPassword
                 }
 
-                console.log('registration form . vue')
-                console.log(registrationForm.confirmedPassword)
-                console.log(registrationForm)
                 await this.addUserAction(registrationForm)
 
-
                 const form = this.registrationForm
-
 
                 if (form.user.id !== null) {
                     await this.$router.push('login')

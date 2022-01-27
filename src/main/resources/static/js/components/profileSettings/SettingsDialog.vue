@@ -14,12 +14,15 @@
         </template>
 
         <v-card>
+            <v-alert v-if="item.deleteError" type="error">
+                {{item.deleteError}}
+            </v-alert>
             <v-card-title>
                 <span class="text-h5">{{item.dialogTitle}}</span>
             </v-card-title>
             <v-card-text>
                 <v-container>
-                    <v-row>
+                    <v-row v-if="item.fieldLabel">
                         <v-col>
                             <v-form ref="form"
                                     v-model="valid">
@@ -27,7 +30,6 @@
                                         :label=item.fieldLabel
                                         v-model="newValue"
                                         :rules="item.rules()"
-                                        validate-on-blur
                                         required
                                 ></v-text-field>
 
@@ -41,15 +43,16 @@
                                 text
                                 @click="dialog = false"
                         >
-                            Close
+                            Закрыть
                         </v-btn>
                         <v-btn
                                 color="blue darken-1"
                                 text
                                 :disabled="!valid"
-                                @click="validate"
+                                @click="submit"
                         >
-                            Save
+                            <span v-if="item.submitItem">Удалить</span>
+                            <span v-else>Сохранить</span>
                         </v-btn>
                     </v-card-actions>
                 </v-container>
@@ -61,8 +64,8 @@
 <script>
     import { mapActions } from 'vuex'
     export default {
-        name: "PersonalSettings",
-        props: ['principal', 'item'],
+        name: "SettingsDialog",
+        props: ['item', 'submitFunction'],
         data() {
             return {
                 dialog: '',
@@ -72,33 +75,9 @@
         },
 
         methods: {
-            ...mapActions(['updateProfileAction']),
-            validate () {
-                const updatedUserInfo = {
-                    updatedUser: {
-                        id: this.$route.params.id,
-                    },
-                    nameAttribute: this.item.propName
-                }
-                this.setUpdatedAttribute(updatedUserInfo)
-
-                this.updateProfileAction(updatedUserInfo)
-                this.$refs.form.validate()
+            submit () {
+                this.submitFunction(this.newValue, this.item.propName)
             },
-
-            setUpdatedAttribute(updatedUserInfo) {
-                switch (updatedUserInfo.nameAttribute) {
-                    case 'name':
-                        updatedUserInfo.updatedUser.name = this.newValue
-                        break
-                    case 'password':
-                        updatedUserInfo.updatedUser.password = this.newValue
-                        break
-                    case 'email':
-                        updatedUserInfo.updatedUser.email = this.newValue
-                        break
-                }
-            }
         }
     }
 </script>

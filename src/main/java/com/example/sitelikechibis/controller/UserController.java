@@ -10,6 +10,9 @@ import com.example.sitelikechibis.vaidation.EntityUpdateValidator;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.*;
 
 @RestController
@@ -45,12 +49,11 @@ public class UserController {
         return user;
     }
 
-    @PostMapping
+    @PostMapping("registration")
     public RegistrationFormDto registration(
             @Valid @RequestBody RegistrationFormDto registrationForm,
             BindingResult bindingResult
             ) {
-
         Map<String, String> errors = new HashMap<>();
         if (bindingResult.hasErrors()) {
             Map<String, String> validateErrors = ControllerUtils.getErrors(bindingResult);
@@ -62,8 +65,13 @@ public class UserController {
     }
 
     @DeleteMapping("{id}")
-    public void deleteUser(@PathVariable("id") User user) {
-        userService.delete(user);
+    public Boolean deleteUser(@PathVariable("id") User deletedUser,
+                                           @AuthenticationPrincipal User principal) {
+        if (deletedUser.getId().equals(principal.getId())){
+            userService.delete(deletedUser);
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
 
 //    @PostMapping(path = "userpic", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

@@ -7,10 +7,10 @@ const logout = Vue.resource('/logout')
 const userpic = Vue.resource('/user/userpic')
 
 export default {
-    add: user => users.save({}, user),
+    add: user => Vue.http.post('/user/registration', user),
     addUserpic: (pic) => userpic.save({}, pic),
     login: loginForm => login.save({}, loginForm),
     logout: () => logout.save({}),
     updateUser: updatedUserInfo => Vue.http.patch(`/user/${updatedUserInfo.updatedUser.id}`, updatedUserInfo),
-
+    delete: (deletedId) => Vue.http.delete(`/user/${deletedId}`)
 }

@@ -6,12 +6,12 @@
         >
             <v-subheader>Персональные данные</v-subheader>
 
-            <personal-settings-dialog :principal="principal"
-                                      v-for="(item, index) in personalSettingsList"
-                                      :key="index"
-                                      :item="item"
+            <settings-dialog v-for="(item, index) in personalSettingsList"
+                             :key="index"
+                             :item="item"
+                             :submitFunction="update"
             >
-            </personal-settings-dialog>
+            </settings-dialog>
 
         </v-list>
 
@@ -48,11 +48,12 @@
 </template>
 
 <script>
-    import PersonalSettingsDialog from './personalSettings/PersonalSettingsDialog.vue'
+    import SettingsDialog from './SettingsDialog.vue'
+    import { mapActions } from "vuex";
     export default {
         name: "PersonalSettings",
         props: ['principal'],
-        components: { PersonalSettingsDialog },
+        components: { SettingsDialog },
         data() {
             return {
                 personalSettingsList: [
@@ -80,6 +81,7 @@
             }
         },
         methods: {
+            ...mapActions(['updateProfileAction']),
             nameRules () {
                 return [
                     name => !!name || 'Введите своё имя!',
@@ -106,6 +108,31 @@
                     password => password.length >= 6 || 'Пароль должен быть не меньше 6 символов',
                     password => /^\S+$/.test(password) || 'В пароле не должно быть пробелов'
                 ]
+            },
+            update(newValue, propName) {
+                const updatedUserInfo = {
+                    updatedUser: {
+                        id: this.$route.params.id,
+                    },
+                    nameAttribute: propName
+                }
+                this.setUpdatedAttribute(updatedUserInfo, newValue)
+
+                this.updateProfileAction(updatedUserInfo)
+            },
+
+            setUpdatedAttribute(updatedUserInfo, newValue) {
+                switch (updatedUserInfo.nameAttribute) {
+                    case 'name':
+                        updatedUserInfo.updatedUser.name = newValue
+                        break
+                    case 'password':
+                        updatedUserInfo.updatedUser.password = newValue
+                        break
+                    case 'email':
+                        updatedUserInfo.updatedUser.email = newValue
+                        break
+                }
             }
         }
     }

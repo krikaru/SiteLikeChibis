@@ -86,7 +86,12 @@ export default new Vuex.Store({
             await commit('updateProfileMutation', data)
         },
 
-        async logoutAction({commit, state}) {
+        async deleteProfileAction({commit, state}, deletedId) {
+            const result = await userApi.delete(deletedId)
+            return result
+        },
+
+        async logoutAction() {
             await userApi.logout()
         }
     }

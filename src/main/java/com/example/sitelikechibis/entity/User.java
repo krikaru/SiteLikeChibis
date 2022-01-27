@@ -47,7 +47,6 @@ public class User implements UserDetails {
     @NotBlank(message = "Пароль должен быть заполнен", groups = {MarkerInterfaces.PasswordUpdate.class})
     @Length(min=6, max=15, message = "Длина пароля должна быть не меньше 6 и не больше 15 символов", groups = {MarkerInterfaces.PasswordUpdate.class})
     @Pattern(regexp = "^\\S+$", groups = {MarkerInterfaces.PasswordUpdate.class})
-    @JsonIgnore
     private String password;
 
     @NotBlank(message = "Email должен быть заполнен", groups = {MarkerInterfaces.EmailUpdate.class})
