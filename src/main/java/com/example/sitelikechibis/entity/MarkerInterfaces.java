@@ -5,4 +5,5 @@ public final class MarkerInterfaces {
     public interface NameUpdate extends AttributeUpdate {}
     public interface EmailUpdate extends AttributeUpdate {}
     public interface PasswordUpdate extends AttributeUpdate {}
+    public interface UserpicUpdate extends AttributeUpdate {}
 }

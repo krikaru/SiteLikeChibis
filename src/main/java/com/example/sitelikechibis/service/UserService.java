@@ -51,6 +51,7 @@ public class UserService implements UserDetailsService {
             }
 
             user.setActive(false);
+            user.setUserpic("default.jpg");
             user.getRoles().add(Role.ADMIN);
             user.setActivationCode(UUID.randomUUID().toString());
             user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -86,6 +87,8 @@ public class UserService implements UserDetailsService {
             case "email":
                 user.setEmail(updatedUser.getUpdatedUser().getEmail());
                 break;
+            case "userpic":
+                user.setUserpic(updatedUser.getUpdatedUser().getUserpic());
             default:
                 break;
         }

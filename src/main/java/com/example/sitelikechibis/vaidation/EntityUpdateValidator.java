@@ -38,6 +38,8 @@ public class EntityUpdateValidator {
                 return MarkerInterfaces.PasswordUpdate.class;
             case "email":
                 return MarkerInterfaces.EmailUpdate.class;
+            case "userpic":
+                return MarkerInterfaces.UserpicUpdate.class;
             default:
                 return MarkerInterfaces.AttributeUpdate.class;
 

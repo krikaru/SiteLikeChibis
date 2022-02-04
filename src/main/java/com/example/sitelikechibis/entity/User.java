@@ -31,26 +31,26 @@ public class User implements UserDetails {
     @JsonView(Views.BaseUserInfo.class)
     private Long id;
 
-    @NotBlank(message = "Username cannot be empty")
+    @NotBlank(message = "Username cannot be empty.")
     @Length(min=3, max=12)
     @Pattern(regexp = "^[a-zA-Z1-9]+$")
     private String username;
 
-    @NotBlank(message = "Имя не должно быть пустым", groups = {MarkerInterfaces.NameUpdate.class})
-    @Length(message = "Длина имени должна быть не меньше 3 и не больше 25 символов", max=25, min = 3, groups = {MarkerInterfaces.NameUpdate.class})
-    @Pattern(message = "Имя может содержать только буквы русского и английского алфавита",
+    @NotBlank(message = "Имя не должно быть пустым.", groups = {MarkerInterfaces.NameUpdate.class})
+    @Length(message = "Длина имени должна быть не меньше 3 и не больше 25 символов.", max=25, min = 3, groups = {MarkerInterfaces.NameUpdate.class})
+    @Pattern(message = "Имя может содержать только буквы русского и английского алфавита.",
             regexp = "^[a-zA-Zа-яА-ЯёЁ-]+$",
             flags = Pattern.Flag.CASE_INSENSITIVE, groups = {MarkerInterfaces.NameUpdate.class})
     @JsonView(Views.BaseUserInfo.class)
     private String name;
 
-    @NotBlank(message = "Пароль должен быть заполнен", groups = {MarkerInterfaces.PasswordUpdate.class})
-    @Length(min=6, max=15, message = "Длина пароля должна быть не меньше 6 и не больше 15 символов", groups = {MarkerInterfaces.PasswordUpdate.class})
+    @NotBlank(message = "Пароль должен быть заполнен.", groups = {MarkerInterfaces.PasswordUpdate.class})
+    @Length(min=6, max=15, message = "Длина пароля должна быть не меньше 6 и не больше 15 символов.", groups = {MarkerInterfaces.PasswordUpdate.class})
     @Pattern(regexp = "^\\S+$", groups = {MarkerInterfaces.PasswordUpdate.class})
     private String password;
 
-    @NotBlank(message = "Email должен быть заполнен", groups = {MarkerInterfaces.EmailUpdate.class})
-    @Email(message = "Неверный формат email", groups = {MarkerInterfaces.EmailUpdate.class})
+    @NotBlank(message = "Email должен быть заполнен.", groups = {MarkerInterfaces.EmailUpdate.class})
+    @Email(message = "Неверный формат email.", groups = {MarkerInterfaces.EmailUpdate.class})
     @JsonView(Views.BaseUserInfo.class)
     private String email;
 
@@ -66,6 +66,8 @@ public class User implements UserDetails {
     @JsonView(Views.UpdatedUserInfo.class)
     private List<News> news;
 
+    @NotBlank(message = "Файл не выбран!Выберите файл.", groups = {MarkerInterfaces.UserpicUpdate.class})
+//    @Size(message = "Размер аватара не должен превышать 10Мб!", groups = {MarkerInterfaces.UserpicUpdate.class})
     @JsonView(Views.BaseUserInfo.class)
     private String userpic;
 

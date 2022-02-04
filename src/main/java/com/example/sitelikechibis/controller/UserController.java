@@ -75,18 +75,37 @@ public class UserController {
         return Boolean.FALSE;
     }
 
-//    @PostMapping(path = "userpic", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    public boolean uploadUserpic(
-//            @RequestParam("userpic") MultipartFile userpic,
-//            @AuthenticationPrincipal User principal
-//    ) throws IOException {
-//        boolean result = saveUserpic(userpic, principal);
-//        if (result) {
-//            userService.update(principal);
-//            return true;
-//        }
-//        return false;
-//    }
+    @PostMapping(path = "{id}/userpic", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public UpdatedAttributeUserDto uploadUserpic(
+            @RequestParam("userpic") MultipartFile userpic,
+            @PathVariable Long id,
+            @AuthenticationPrincipal User principal
+    ) throws IOException {
+        User userFromDb = userService.findById(principal.getId()).get();
+
+        User updatedUser = new User();
+        updatedUser.setUserpic(userpic.getOriginalFilename());
+        UpdatedAttributeUserDto updatedUserDto = new UpdatedAttributeUserDto(updatedUser, "userpic");
+
+        List<String> errors;
+        if (id.equals(userFromDb.getId())) {
+            errors = validator.validateUser(updatedUserDto);
+
+            if (errors != null) {
+                updatedUserDto.setErrors(errors);
+            } else {
+                boolean result = saveUserpic(userpic, principal);
+                if (result) {
+                    userService.update(userFromDb, updatedUserDto);
+                }
+            }
+        } else {
+            errors = new ArrayList<>();
+            errors.add("Попытка поменять чужие данные!");
+            updatedUserDto.setErrors(errors);
+        }
+        return updatedUserDto;
+    }
 
 
     @PatchMapping("{id}")
