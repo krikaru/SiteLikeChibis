@@ -44,7 +44,9 @@ export default new Vuex.Store({
             } else {
                 state.updateError = updatedUserInfo.errors
             }
-
+        },
+        logoutMutation(state) {
+            state.principal = null
         }
     },
 
@@ -91,8 +93,9 @@ export default new Vuex.Store({
             return result
         },
 
-        async logoutAction() {
+        async logoutAction({ commit, state }) {
             await userApi.logout()
+            await commit('logoutMutation')
         }
     }
 })

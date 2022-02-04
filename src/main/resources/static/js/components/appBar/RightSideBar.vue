@@ -54,35 +54,35 @@
 </template>
 
 <script>
-    import { mapState, mapActions } from 'vuex'
+    import { mapActions } from 'vuex'
     export default {
         name: "RightSideBar",
-
-        computed: {
-            ...mapState(['principal']),
-
-        },
-
+        props: ['principal'],
         data() {
             return {
-                nullProfileMenuItems: [
-                    {title: 'Зарегистрироваться', link: '/registration', icon: 'add_box'},
-                    {title: 'Войти', link: '/login', icon: 'login'},
-                ],
-                profileMenuItems: [
-                    {title: 'Мой профиль', link: '/profile/7', icon: 'person'},
-                    {title: 'Корзина', link: '/shopcart', icon: 'shopping_cart'},
-                    {title: 'Мои публикации', link: '/mynews', icon: 'article'},
-                    {title: 'Настройки', link: '/profile/7/settings', icon: 'settings'},
-                    {title: 'Выйти', link: '/logout', icon: 'logout'},
-                ]
+
             }
         },
 
         methods: {
             ...mapActions(['logoutAction']),
+
+
             profileMenu() {
-                return this.principal ? this.profileMenuItems : this.nullProfileMenuItems
+                if (this.principal) {
+                    return [
+                        {title: 'Мой профиль', link: `/profile/${this.principal.id}`, icon: 'person'},
+                        {title: 'Корзина', link: '/shopcart', icon: 'shopping_cart'},
+                        {title: 'Мои публикации', link: '/mynews', icon: 'article'},
+                        {title: 'Настройки', link: `/profile/${this.principal.id}/settings`, icon: 'settings'},
+                        {title: 'Выйти', link: '/logout', icon: 'logout'},
+                    ]
+                } else {
+                    return [
+                        {title: 'Зарегистрироваться', link: '/registration', icon: 'add_box'},
+                        {title: 'Войти', link: '/login', icon: 'login'},
+                    ]
+                }
             },
 
             clickProfileMenu(item) {

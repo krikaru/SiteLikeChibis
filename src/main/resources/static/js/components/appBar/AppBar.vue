@@ -21,7 +21,7 @@
             </v-flex>
 
             <v-flex xs3>
-                <right-side-bar></right-side-bar>
+                <right-side-bar :principal="principal"></right-side-bar>
             </v-flex>
         </v-layout>
     </v-app-bar>
@@ -31,9 +31,13 @@
     import NavigationButton from "./NavigationButton.vue";
     import LeftSideBar from "./LeftSideBar.vue";
     import RightSideBar from "./RightSideBar.vue";
+    import { mapState } from "vuex";
     export default {
         name: "AppBar",
-        components: {RightSideBar, LeftSideBar, NavigationButton}
+        components: {RightSideBar, LeftSideBar, NavigationButton},
+        computed: {
+            ...mapState(['principal']),
+        },
     }
 </script>
 
