@@ -22,17 +22,25 @@
             </v-card-title>
             <v-card-text>
                 <v-container>
-                    <v-row v-if="item.fieldLabel">
+                    <v-row v-if="item.fieldLabel || item.fileInput">
                         <v-col>
                             <v-form ref="form"
                                     v-model="valid">
                                 <v-text-field
+                                        v-if="item.fieldLabel"
                                         :label=item.fieldLabel
                                         v-model="newValue"
                                         :rules="item.rules()"
-                                        required
                                 ></v-text-field>
-
+                                <v-file-input
+                                        v-if="item.fileInput"
+                                        show-size
+                                        accept="image/png, image/jpeg"
+                                        :label=item.fileInput
+                                        v-model="newValue"
+                                        prepend-icon="mdi-camera"
+                                        :rules="item.rules()"
+                                ></v-file-input>
                             </v-form>
                         </v-col>
                     </v-row>
@@ -62,7 +70,6 @@
 </template>
 
 <script>
-    import { mapActions } from 'vuex'
     export default {
         name: "SettingsDialog",
         props: ['item', 'submitFunction'],
@@ -78,6 +85,10 @@
             submit () {
                 this.submitFunction(this.newValue, this.item.propName)
             },
+        },
+
+        created() {
+            this.newValue = this.item.fileInput ? null : ''
         }
     }
 </script>

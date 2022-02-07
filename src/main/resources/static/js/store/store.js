@@ -40,6 +40,8 @@ export default new Vuex.Store({
                     case 'email':
                         state.principal.email = updatedUserInfo.updatedUser.email
                         break
+                    case 'userpic':
+                        state.principal.userpic = updatedUserInfo.updatedUser.userpic
                 }
             } else {
                 state.updateError = updatedUserInfo.errors
@@ -84,6 +86,12 @@ export default new Vuex.Store({
 
         async updateProfileAction({commit, state}, updatedUserInfo) {
             const result = await userApi.updateUser(updatedUserInfo)
+            const data = await result.json()
+            await commit('updateProfileMutation', data)
+        },
+
+        async updateUserpicAction({commit, state}, updateInfo) {
+            const result = await userApi.updateUserpic(updateInfo)
             const data = await result.json()
             await commit('updateProfileMutation', data)
         },

@@ -9,7 +9,7 @@
             <settings-dialog v-for="(item, index) in personalSettingsList"
                              :key="index"
                              :item="item"
-                             :submitFunction="update"
+                             :submitFunction="update(item.propName)"
             >
             </settings-dialog>
 
@@ -62,11 +62,11 @@
                         dialogTitle:'Изменить имя', fieldLabel: 'Введите новое имя',
                         rules: this.nameRules, dialog: '', propName: 'name'
                     },
-                    // {
-                    //     title: 'Добавить/изменить фото профиля', subtitle: null, currentVal: this.principal.name,
-                    //     dialogTitle:'Изменить фото', currentKey: 'Ваше текущее фото:',
-                    //     fieldLabel: 'Загрузите новое фото', rules: this.nameRules, dialog: '', newName: ''
-                    // },
+                    {
+                        title: 'Добавить/изменить фото профиля', subtitle: null,
+                        dialogTitle:'Добавить/изменить фото профиля', fileInput: 'Загрузить новое фото',
+                        rules: this.userpicRules, dialog: '', propName: 'userpic'
+                    },
                     {
                         title: 'Изменить e-mail', subtitle: 'На этот e-mail будут приходить все новости',
                         dialogTitle:'Изменить e-mail', fieldLabel: 'Введите новый e-mail',
@@ -81,7 +81,7 @@
             }
         },
         methods: {
-            ...mapActions(['updateProfileAction']),
+            ...mapActions(['updateProfileAction', 'updateUserpicAction']),
             nameRules () {
                 return [
                     name => !!name || 'Введите своё имя!',
@@ -109,7 +109,24 @@
                     password => /^\S+$/.test(password) || 'В пароле не должно быть пробелов'
                 ]
             },
-            update(newValue, propName) {
+
+            userpicRules() {
+                return [
+                    userpic => !!userpic || 'Фото не добавлено!',
+                    userpic => !userpic || userpic.size < 5000000 || 'Размер фото не должен превышать 5 MB!',
+                    userpic => (userpic !== null && (userpic.type==='image/jpeg' || userpic.type==='image/png')) || 'Неверное расширение файла'
+                ]
+            },
+
+            update(propName) {
+                if (propName === 'userpic') {
+                    return this.updateUserpic
+                } else {
+                    return this.updateInfo
+                }
+            },
+
+            updateInfo(newValue, propName) {
                 const updatedUserInfo = {
                     updatedUser: {
                         id: this.$route.params.id,
@@ -119,6 +136,12 @@
                 this.setUpdatedAttribute(updatedUserInfo, newValue)
 
                 this.updateProfileAction(updatedUserInfo)
+            },
+
+            updateUserpic(newPic, propName=null) {
+                const userpic = new FormData()
+                userpic.set("userpic", newPic);
+              this.updateUserpicAction({userpic, id: this.$route.params.id})
             },
 
             setUpdatedAttribute(updatedUserInfo, newValue) {
@@ -131,6 +154,8 @@
                         break
                     case 'email':
                         updatedUserInfo.updatedUser.email = newValue
+                    case 'userpic':
+                        updatedUserInfo.updatedUser.userpic = newValue
                         break
                 }
             }
