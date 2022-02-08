@@ -22,6 +22,12 @@
             </v-card-title>
             <v-card-text>
                 <v-container>
+                    <v-alert v-if="updateStatus" type="success">
+                        Ваши данные изменены!
+                    </v-alert>
+                    <v-alert v-if="updateError" type="error">
+                        Данные не были обновлены!
+                    </v-alert>
                     <v-row v-if="item.fieldLabel || item.fileInput">
                         <v-col>
                             <v-form ref="form"
@@ -49,7 +55,7 @@
                         <v-btn
                                 color="blue darken-1"
                                 text
-                                @click="dialog = false"
+                                @click="close"
                         >
                             Закрыть
                         </v-btn>
@@ -78,13 +84,26 @@
                 dialog: '',
                 newValue: '',
                 valid: true,
+                updateStatus: false,
+                updateError: null
             }
         },
 
         methods: {
-            submit () {
-                this.submitFunction(this.newValue, this.item.propName)
+            async submit () {
+                let updateData = await this.submitFunction(this.newValue, this.item.propName)
+                if (updateData.errors === null) {
+                    this.updateStatus = true
+                } else {
+                    this.updateError = updateData.errors
+                }
             },
+            close() {
+                this.updateStatus = false
+                this.newValue = this.item.fileInput ? null : ''
+                this.$refs.form.resetValidation()
+                this.dialog = false
+            }
         },
 
         created() {

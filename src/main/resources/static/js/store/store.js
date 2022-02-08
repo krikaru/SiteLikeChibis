@@ -13,7 +13,7 @@ export default new Vuex.Store({
             user: null
         },
         loginError: null,
-        updateError: null
+        updateError: null,
     },
 
     mutations: {
@@ -71,8 +71,6 @@ export default new Vuex.Store({
                 const result = await userApi.login(loginForm)
                 state.loginError = null
             } catch (e) {
-
-                console.log(e.body.error)
                 if (e.body.error ==='Bad credentials') {
                     state.loginError = 'Неверный пароль.'
                 } else if (e.body.error === 'User is disabled') {
@@ -88,12 +86,14 @@ export default new Vuex.Store({
             const result = await userApi.updateUser(updatedUserInfo)
             const data = await result.json()
             await commit('updateProfileMutation', data)
+            return data
         },
 
         async updateUserpicAction({commit, state}, updateInfo) {
             const result = await userApi.updateUserpic(updateInfo)
             const data = await result.json()
             await commit('updateProfileMutation', data)
+            return data
         },
 
         async deleteProfileAction({commit, state}, deletedId) {

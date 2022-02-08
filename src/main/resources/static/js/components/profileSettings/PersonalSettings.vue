@@ -135,13 +135,15 @@
                 }
                 this.setUpdatedAttribute(updatedUserInfo, newValue)
 
-                this.updateProfileAction(updatedUserInfo)
+                let updateData = this.updateProfileAction(updatedUserInfo)
+                return updateData
             },
 
             updateUserpic(newPic, propName=null) {
                 const userpic = new FormData()
                 userpic.set("userpic", newPic);
-              this.updateUserpicAction({userpic, id: this.$route.params.id})
+                let updateData = this.updateUserpicAction({userpic, id: this.$route.params.id})
+                return updateData
             },
 
             setUpdatedAttribute(updatedUserInfo, newValue) {
