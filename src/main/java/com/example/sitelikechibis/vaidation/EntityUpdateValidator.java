@@ -1,7 +1,7 @@
 package com.example.sitelikechibis.vaidation;
 
 import com.example.sitelikechibis.entity.MarkerInterfaces;
-import com.example.sitelikechibis.entity.dto.UpdatedAttributeUserDto;
+import com.example.sitelikechibis.entity.dto.UpdatedAttributeEntityDto;
 import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolation;
@@ -18,11 +18,11 @@ public class EntityUpdateValidator {
         this.validator = validator;
     }
 
-    public List<String> validateUser(UpdatedAttributeUserDto updatedUser) {
+    public List<String> validateUser(UpdatedAttributeEntityDto updatedUser) {
         Class<? extends MarkerInterfaces.AttributeUpdate> attributeUpdate = getValidatedUserAttributeClass(updatedUser.getNameAttribute());
         List<String> errors;
 
-        Set<ConstraintViolation<UpdatedAttributeUserDto>> validate = validator.validate(updatedUser, attributeUpdate);
+        Set<ConstraintViolation<UpdatedAttributeEntityDto>> validate = validator.validate(updatedUser, attributeUpdate);
         if (!validate.isEmpty()) {
             errors = validate.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList());
             return errors;

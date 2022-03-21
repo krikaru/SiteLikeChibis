@@ -12,13 +12,10 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepo extends JpaRepository<User, Long> {
-    @EntityGraph(attributePaths = {"news"})
+
     Optional<User> findById(Long id);
 
-
-    User findByEmail(String email);
-
-    @EntityGraph(attributePaths = {"roles"})
+    @EntityGraph(attributePaths = {"roles", "news"})
     User findByUsername(String s);
 
     Optional<User> findByActivationCode(String activationCode);

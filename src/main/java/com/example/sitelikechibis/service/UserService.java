@@ -3,7 +3,7 @@ package com.example.sitelikechibis.service;
 import com.example.sitelikechibis.entity.Role;
 import com.example.sitelikechibis.entity.User;
 import com.example.sitelikechibis.entity.dto.RegistrationFormDto;
-import com.example.sitelikechibis.entity.dto.UpdatedAttributeUserDto;
+import com.example.sitelikechibis.entity.dto.UpdatedAttributeEntityDto;
 import com.example.sitelikechibis.repo.UserRepo;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -76,19 +76,19 @@ public class UserService implements UserDetailsService {
         mailSender.send(user.getEmail(), "Activation code", message);
     }
 
-    public User update(User user, UpdatedAttributeUserDto updatedUser) {
+    public User update(User user, UpdatedAttributeEntityDto<User> updatedUser) {
         switch (updatedUser.getNameAttribute()) {
             case "name":
-                user.setName(updatedUser.getUpdatedUser().getName());
+                user.setName(updatedUser.getUpdatedEntity().getName());
                 break;
             case "password":
-                user.setPassword(updatedUser.getUpdatedUser().getPassword());
+                user.setPassword(updatedUser.getUpdatedEntity().getPassword());
                 break;
             case "email":
-                user.setEmail(updatedUser.getUpdatedUser().getEmail());
+                user.setEmail(updatedUser.getUpdatedEntity().getEmail());
                 break;
             case "userpic":
-                user.setUserpic(updatedUser.getUpdatedUser().getUserpic());
+                user.setUserpic(updatedUser.getUpdatedEntity().getUserpic());
             default:
                 break;
         }

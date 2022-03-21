@@ -6,7 +6,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state:{
-        rowNews,
+        news: JSON.parse(rowNews),
         principal: JSON.parse(rowPrincipal),
         registrationForm: {
             errors: null,

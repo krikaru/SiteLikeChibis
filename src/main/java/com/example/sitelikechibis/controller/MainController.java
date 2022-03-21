@@ -46,6 +46,9 @@ public class MainController {
             model.addAttribute("principal", "null");
         }
 
+        String serializedNews = newsWriter.writeValueAsString(newsService.findAll());
+        model.addAttribute("news", serializedNews);
+
         return "index";
     }
 

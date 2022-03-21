@@ -4,16 +4,13 @@ import com.example.sitelikechibis.controller.util.ControllerUtils;
 import com.example.sitelikechibis.entity.User;
 import com.example.sitelikechibis.entity.Views;
 import com.example.sitelikechibis.entity.dto.RegistrationFormDto;
-import com.example.sitelikechibis.entity.dto.UpdatedAttributeUserDto;
+import com.example.sitelikechibis.entity.dto.UpdatedAttributeEntityDto;
 import com.example.sitelikechibis.service.UserService;
 import com.example.sitelikechibis.vaidation.EntityUpdateValidator;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.util.*;
 
 @RestController
@@ -57,8 +53,8 @@ public class UserController {
             ) {
         Map<String, String> errors = new HashMap<>();
         if (bindingResult.hasErrors()) {
-            Map<String, String> validateErrors = ControllerUtils.getErrors(bindingResult);
-            errors.putAll(validateErrors);
+//            Map<String, String> validateErrors = ControllerUtils.getErrors(bindingResult);
+//            errors.putAll(validateErrors);
             return new RegistrationFormDto(registrationForm.getUser(), errors);
         }
 
@@ -75,8 +71,9 @@ public class UserController {
         return Boolean.FALSE;
     }
 
-    @PostMapping(path = "{id}/userpic", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public UpdatedAttributeUserDto uploadUserpic(
+    @PutMapping(path = "{id}/userpic", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @JsonView(Views.BaseUserInfo.class)
+    public UpdatedAttributeEntityDto<User> uploadUserpic(
             @RequestParam("userpic") MultipartFile userpic,
             @PathVariable Long id,
             @AuthenticationPrincipal User principal
@@ -85,7 +82,7 @@ public class UserController {
 
         User updatedUser = new User();
         updatedUser.setUserpic(userpic.getOriginalFilename());
-        UpdatedAttributeUserDto updatedUserDto = new UpdatedAttributeUserDto(updatedUser, "userpic");
+        UpdatedAttributeEntityDto<User> updatedUserDto = new UpdatedAttributeEntityDto<>(updatedUser, "userpic");
 
         List<String> errors;
         if (id.equals(userFromDb.getId())) {
@@ -108,10 +105,10 @@ public class UserController {
     }
 
 
-    @PatchMapping("{id}")
+    @PutMapping("{id}")
     @JsonView(Views.BaseUserInfo.class)
-    public UpdatedAttributeUserDto updateProfile(
-            @RequestBody UpdatedAttributeUserDto updatedUserDto,
+    public UpdatedAttributeEntityDto<User> updateProfile(
+            @RequestBody UpdatedAttributeEntityDto<User> updatedUserDto,
             @PathVariable Long id,
             @AuthenticationPrincipal User principal
     ) {

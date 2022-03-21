@@ -31,7 +31,7 @@ public class User implements UserDetails {
     @JsonView(Views.BaseUserInfo.class)
     private Long id;
 
-    @NotBlank(message = "Username cannot be empty.")
+    @NotBlank(message = "Логин не должен быть пустым.")
     @Length(min=3, max=12)
     @Pattern(regexp = "^[a-zA-Z1-9]+$")
     private String username;
@@ -62,8 +62,8 @@ public class User implements UserDetails {
     private boolean active;
     private String activationCode;
 
-    @OneToMany(mappedBy = "author")
-    @JsonView(Views.UpdatedUserInfo.class)
+    @OneToMany(mappedBy = "author", fetch = FetchType.EAGER)
+    @JsonView(Views.BaseUserInfo.class)
     private List<News> news;
 
     @NotBlank(message = "Файл не выбран!Выберите файл.", groups = {MarkerInterfaces.UserpicUpdate.class})

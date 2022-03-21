@@ -1,6 +1,7 @@
 package com.example.sitelikechibis.service;
 
 import com.example.sitelikechibis.entity.News;
+import com.example.sitelikechibis.entity.User;
 import com.example.sitelikechibis.repo.NewsRepo;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,8 @@ public class NewsService {
         return newsRepo.findAll();
     }
 
-    public News create(News news) {
+    public News create(News news, User principal) {
+        news.setAuthor(principal);
         news.setCreationDate(LocalDateTime.now());
         return newsRepo.save(news);
     }
