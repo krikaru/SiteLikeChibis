@@ -21,10 +21,6 @@ import java.util.Set;
 @ToString(of = {"name", "email"})
 @Entity
 @Table(name = "usr")
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id"
-)
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -51,7 +47,7 @@ public class User implements UserDetails {
 
     @NotBlank(message = "Email должен быть заполнен.", groups = {MarkerInterfaces.EmailUpdate.class})
     @Email(message = "Неверный формат email.", groups = {MarkerInterfaces.EmailUpdate.class})
-    @JsonView(Views.BaseUserInfo.class)
+    @JsonView(Views.FullUserInfo.class)
     private String email;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
@@ -63,12 +59,12 @@ public class User implements UserDetails {
     private String activationCode;
 
     @OneToMany(mappedBy = "author", fetch = FetchType.EAGER)
-    @JsonView(Views.BaseUserInfo.class)
+    @JsonView(Views.FullUserInfo.class)
     private List<News> news;
 
     @NotBlank(message = "Файл не выбран!Выберите файл.", groups = {MarkerInterfaces.UserpicUpdate.class})
 //    @Size(message = "Размер аватара не должен превышать 10Мб!", groups = {MarkerInterfaces.UserpicUpdate.class})
-    @JsonView(Views.BaseUserInfo.class)
+    @JsonView(Views.FullUserInfo.class)
     private String userpic;
 
     @Override

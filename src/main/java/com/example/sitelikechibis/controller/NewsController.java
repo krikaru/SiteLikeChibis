@@ -16,24 +16,12 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/news")
+@RequestMapping("api/news")
 public class NewsController {
     private final NewsService newsService;
-    private final UserService userService;
 
-    public NewsController(NewsService newsService, UserService userService) {
+    public NewsController(NewsService newsService) {
         this.newsService = newsService;
-        this.userService = userService;
-    }
-
-    @GetMapping
-    public List<News> getAllNews() {
-        return newsService.findAll();
-    }
-
-    @GetMapping("/{id}")
-    public News getOneNews(@PathVariable("id") News news) {
-        return news;
     }
 
     @PostMapping

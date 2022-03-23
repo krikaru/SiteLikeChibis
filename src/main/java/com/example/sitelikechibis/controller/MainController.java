@@ -30,7 +30,7 @@ public class MainController {
                 .setConfig(mapper.getSerializationConfig());
 
         this.userWriter = objectMapper
-                .writerWithView(Views.BaseUserInfo.class);
+                .writerWithView(Views.FullUserInfo.class);
         this.newsWriter = objectMapper
                 .writerWithView(Views.FullNews.class);
     }

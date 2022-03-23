@@ -5,18 +5,21 @@ import RegistrationPage from "pages/RegistrationPage.vue";
 import LoginPage from "pages/LoginPage.vue";
 import ProfilePage from "pages/ProfilePage.vue";
 import SettingsPage from "pages/SettingsPage.vue";
+import MainPage from "pages/MainPage.vue";
 
 Vue.use(VueRouter)
 
 const routes = [
-    { path: '/', component: NewsPage},
-    { path: '/registration', component: RegistrationPage},
-    { path: '/login/:activated?', component: LoginPage},
+    { path: '/', component: MainPage },
+    { path: '/news/:id', component: NewsPage },
+    { path: '/registration', component: RegistrationPage },
+    { path: '/login/:activated?', component: LoginPage },
     { path: '/profile/:id', component: ProfilePage,
         children: [
-            { path: 'settings', component: SettingsPage},
+            { path: 'settings', component: SettingsPage },
         ]},
-    { path: '*', component: NewsPage}
+
+    { path: '*', component: MainPage}
 ]
 
 export default new VueRouter({

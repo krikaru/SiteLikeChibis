@@ -1,9 +1,6 @@
 package com.example.sitelikechibis.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import lombok.Data;
 import lombok.ToString;
 
@@ -20,6 +17,7 @@ import java.util.List;
 public class News implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonView(Views.FullNews.class)
     private Long id;
     @NotBlank(message = "У новости должен быть заголовок!")
     @JsonView(Views.FullNews.class)
@@ -27,7 +25,9 @@ public class News implements Serializable {
     @NotBlank(message = "У новости должен быть основной текст!")
     @JsonView(Views.FullNews.class)
     private String text;
+    @Column(updatable = false)
     @JsonView(Views.FullNews.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy HH:mm")
     private LocalDateTime creationDate;
     @ManyToOne
     @JoinColumn(name = "user_id")

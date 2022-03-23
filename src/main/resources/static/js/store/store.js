@@ -16,6 +16,11 @@ export default new Vuex.Store({
         updateError: null,
     },
 
+    getters: {
+        //если меседжей нет, то возвращаем пустой массив
+        sortedNews: state => (state.news || []).sort((a, b) => -(a.id - b.id))
+    },
+
     mutations: {
         addUserMutation(state, form) {
             state.registrationForm.errors = form.errors
