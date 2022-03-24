@@ -12,6 +12,7 @@ Vue.use(VueRouter)
 const routes = [
     { path: '/', component: MainPage },
     { path: '/news/:id', component: NewsPage },
+    { path: '/news/:id/like', component: NewsPage },
     { path: '/registration', component: RegistrationPage },
     { path: '/login/:activated?', component: LoginPage },
     { path: '/profile/:id', component: ProfilePage,

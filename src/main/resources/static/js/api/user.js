@@ -12,4 +12,5 @@ export default {
     logout: () => logout.save({}),
     updateUser: updatedUserInfo => Vue.http.put(`/user/${updatedUserInfo.updatedUser.id}`, updatedUserInfo),
     delete: (deletedId) => Vue.http.delete(`/user/${deletedId}`)
+
 }

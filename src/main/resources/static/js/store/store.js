@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import userApi from 'api/user'
+import newsApi from 'api/news'
 
 Vue.use(Vuex)
 
@@ -52,6 +53,11 @@ export default new Vuex.Store({
                 state.updateError = updatedUserInfo.errors
             }
         },
+
+        likeMutation(state, news) {
+            state.news.find(newsUnit => newsUnit.id === news.newsId).likes = news.data.likes
+        },
+
         logoutMutation(state) {
             state.principal = null
         }
@@ -101,6 +107,18 @@ export default new Vuex.Store({
             return data
         },
 
+        async likeAction({commit, state}, newsId) {
+            let status = 200
+            try {
+                const result = await newsApi.like(newsId)
+                const data = await result.json()
+                await commit('likeMutation', { data, newsId })
+            }catch (e) {
+                status = e.status
+            }
+            return status
+        },
+
         async deleteProfileAction({commit, state}, deletedId) {
             const result = await userApi.delete(deletedId)
             return result
@@ -110,5 +128,7 @@ export default new Vuex.Store({
             await userApi.logout()
             await commit('logoutMutation')
         }
+
+
     }
 })

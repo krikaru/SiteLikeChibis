@@ -8,12 +8,14 @@ import com.example.sitelikechibis.entity.dto.UpdatedAttributeEntityDto;
 import com.example.sitelikechibis.service.NewsService;
 import com.example.sitelikechibis.service.UserService;
 import com.fasterxml.jackson.annotation.JsonView;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("api/news")
@@ -51,4 +53,25 @@ public class NewsController {
         newsService.delete(news);
     }
 
+    @GetMapping("{id}/like")
+    @JsonView(Views.FullNews.class)
+    public ResponseEntity<News> like(
+            @AuthenticationPrincipal User user,
+            @PathVariable("id") News news
+    ) {
+
+        if (user != null) {
+            Set<User> likes = news.getLikes();
+            News responseNews = new News();
+            if (likes.contains(user)) {
+                likes.remove(user);
+            } else {
+                likes.add(user);
+            }
+            responseNews.setLikes(likes);
+            return new ResponseEntity<>(responseNews, HttpStatus.OK);
+        } else {
+            return new ResponseEntity(HttpStatus.FORBIDDEN);
+        }
+    }
 }
