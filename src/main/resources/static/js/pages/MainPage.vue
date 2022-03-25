@@ -1,12 +1,12 @@
 <template>
     <v-main>
         <v-container fluid>
-            <v-layout row wrap>
+            <v-layout row>
                 <v-flex xs3>
                     <news-sorter></news-sorter>
                 </v-flex>
                 <v-flex xs9>
-                    <news-unit></news-unit>
+                    <news-unit v-for="newsUnit in sortedNews" :key="newsUnit.id" :newsUnit="newsUnit"></news-unit>
                 </v-flex>
             </v-layout>
         </v-container>
@@ -20,7 +20,7 @@
     import NewsSorter from 'components/NewsSorter.vue'
     export default {
         components: {NewsSorter, NewsUnit},
-        computed: mapGetters(['news'])
+        computed: mapGetters(['sortedNews'])
     }
 </script>
 

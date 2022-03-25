@@ -85,9 +85,10 @@
                 }
             },
 
-            clickProfileMenu(item) {
+            async clickProfileMenu(item) {
                 if (item.link === '/logout') {
-                    this.logoutAction()
+                    await this.logoutAction()
+                    this.principal = null
                     window.location.href = '/'
                 }
                 else if (this.$route.path !== item.link) {

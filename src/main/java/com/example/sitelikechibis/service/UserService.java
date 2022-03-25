@@ -50,7 +50,7 @@ public class UserService implements UserDetailsService {
                 return new RegistrationFormDto(user, errors);
             }
 
-            user.setActive(false);
+            user.setActive(true);
             user.setUserpic("default.jpg");
             user.getRoles().add(Role.ADMIN);
             user.setActivationCode(UUID.randomUUID().toString());
