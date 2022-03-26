@@ -60,6 +60,10 @@ export default new Vuex.Store({
 
         logoutMutation(state) {
             state.principal = null
+        },
+
+        addNewsMutation(state, news) {
+            state.news.push(news)
         }
     },
 
@@ -127,8 +131,20 @@ export default new Vuex.Store({
         async logoutAction({ commit, state }) {
             await userApi.logout()
             await commit('logoutMutation')
-        }
+        },
 
+        async addNewsAction({commit, state}, news) {
+
+            try {
+                const result = await newsApi.add(news)
+                const data = await result.json()
+                await commit('addNewsMutation', data.updatedEntity)
+                return data.errors
+            } catch (e) {
+                return e.body.errors
+            }
+
+        }
 
     }
 })

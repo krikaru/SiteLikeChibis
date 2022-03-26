@@ -27,17 +27,12 @@ public class NewsController {
     }
 
     @PostMapping
-    @JsonView(Views.BaseUserInfo.class)
+    @JsonView(Views.FullNews.class)
     public UpdatedAttributeEntityDto<News> create(
             @RequestBody @Valid News news,
-            @AuthenticationPrincipal User principal,
-            BindingResult bindingResult
+            @AuthenticationPrincipal User principal
     ) {
-        if (bindingResult.hasErrors()) {
-            return new UpdatedAttributeEntityDto<>(news, null, ControllerUtils.getErrors(bindingResult));
-        } else {
-            return new UpdatedAttributeEntityDto<>(newsService.create(news, principal), null, null);
-        }
+        return new UpdatedAttributeEntityDto<>(newsService.create(news, principal), null, null);
     }
 
     @PutMapping("{id}")

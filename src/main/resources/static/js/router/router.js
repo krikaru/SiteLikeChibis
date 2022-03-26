@@ -6,11 +6,13 @@ import LoginPage from "pages/LoginPage.vue";
 import ProfilePage from "pages/ProfilePage.vue";
 import SettingsPage from "pages/SettingsPage.vue";
 import MainPage from "pages/MainPage.vue";
+import ControlNewsPage from "pages/ControlNewsPage.vue";
 
 Vue.use(VueRouter)
 
 const routes = [
     { path: '/', component: MainPage },
+    { path: '/controlnews', component: ControlNewsPage},
     { path: '/news/:id', component: NewsPage },
     { path: '/news/:id/like', component: NewsPage },
     { path: '/registration', component: RegistrationPage },
@@ -19,7 +21,6 @@ const routes = [
         children: [
             { path: 'settings', component: SettingsPage },
         ]},
-
     { path: '*', component: MainPage}
 ]
 

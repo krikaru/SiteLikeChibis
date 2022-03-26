@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.http.ResponseEntity;
 
 import javax.persistence.*;
@@ -27,9 +28,11 @@ public class News implements Serializable {
     @JsonView(Views.FullNews.class)
     private Long id;
     @NotBlank(message = "У новости должен быть заголовок!")
+    @Length(message = "Длина закголовка должна быть не меньше 5 и не больше 100 символов.", max=100, min = 5)
     @JsonView(Views.FullNews.class)
     private String head;
     @NotBlank(message = "У новости должен быть основной текст!")
+    @Length(message = "Длина основного текста должна быть не меньше 100 и не больше 10000 символов.", max=10000, min = 100)
     @JsonView(Views.FullNews.class)
     private String text;
     @Column(updatable = false)

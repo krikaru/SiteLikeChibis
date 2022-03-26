@@ -12,7 +12,7 @@
         </v-card-text>
         <v-card-actions>
             <v-btn v-if="$route.path === '/'"
-                   color="purple"
+                   color="#87CEFA"
                    text
                    @click="$router.push(`/news/${newsUnit.id}`)"
             >

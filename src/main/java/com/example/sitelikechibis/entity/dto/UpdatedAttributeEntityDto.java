@@ -18,7 +18,7 @@ public class UpdatedAttributeEntityDto<T> {
     @JsonView(Views.BaseUserInfo.class)
     private String nameAttribute;
     @JsonView(Views.BaseUserInfo.class)
-    private List<String> errors;
+    private List<ErrorInfo> errors;
 
     public UpdatedAttributeEntityDto(@Valid T updatedEntity, String nameAttribute) {
         this.updatedEntity = updatedEntity;

@@ -73,7 +73,7 @@
                     return [
                         {title: 'Мой профиль', link: `/profile/${this.principal.id}`, icon: 'person'},
                         {title: 'Корзина', link: '/shopcart', icon: 'shopping_cart'},
-                        {title: 'Мои публикации', link: '/mynews', icon: 'article'},
+                        {title: 'Мои публикации', link: '/controlnews', icon: 'article'},
                         {title: 'Настройки', link: `/profile/${this.principal.id}/settings`, icon: 'settings'},
                         {title: 'Выйти', link: '/logout', icon: 'logout'},
                     ]
