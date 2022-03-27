@@ -13,9 +13,9 @@
 
             <v-flex xs6 class="mt-4 text-center">
                 <span>
-                Если у вас нет аккаунта вы можете
-                <router-link to="/registration">зарегистрироваться</router-link>
-            </span>
+                    Если у вас нет аккаунта вы можете
+                    <router-link to="/registration">зарегистрироваться</router-link>
+                </span>
             </v-flex>
 
 
@@ -48,7 +48,6 @@
             }
         },
         beforeRouteLeave(to, from, next) {
-            this.$store.state.loginError = null
             this.activatedStatus = null
             next()
         }

@@ -32,8 +32,6 @@ public class RestAuthenticationFailureHandler implements AuthenticationFailureHa
         data.put("path", request.getRequestURL().toString());
         data.put("error", ex.getMessage());
 
-        System.out.println(ex.getMessage());
-
         OutputStream out = response.getOutputStream();
         com.fasterxml.jackson.databind.ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(out, data);

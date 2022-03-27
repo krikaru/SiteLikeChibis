@@ -117,11 +117,11 @@ public class UserService implements UserDetailsService {
     }
 
     public boolean findByActivationCode(String activationCode) {
-        Optional<User> activatedUserOpt = userRepo.findByActivationCode(activationCode);
-        if (activatedUserOpt.isPresent()) {
-            User activatedUser = activatedUserOpt.get();
+        User activatedUser = userRepo.findByActivationCode(activationCode);
+        if (activatedUser != null) {
             activatedUser.setActivationCode(null);
             activatedUser.setActive(true);
+            userRepo.save(activatedUser);
             return true;
         } else {
             return false;

@@ -9,12 +9,10 @@ export default new Vuex.Store({
     state:{
         news: JSON.parse(rowNews),
         principal: JSON.parse(rowPrincipal),
-        loginError: null,
         updateError: null,
     },
 
     getters: {
-        //если меседжей нет, то возвращаем пустой массив
         sortedNews: state => (state.news || []).sort((a, b) => -(a.id - b.id))
     },
 
@@ -77,19 +75,11 @@ export default new Vuex.Store({
         },
 
         async loginAction({commit, state}, loginForm) {
-
             try{
-                const result = await userApi.login(loginForm)
-                state.loginError = null
+                await userApi.login(loginForm)
+                return null
             } catch (e) {
-                if (e.body.error ==='Bad credentials') {
-                    state.loginError = 'Неверный пароль.'
-                } else if (e.body.error === 'User is disabled') {
-                    state.loginError = 'Аккаунт не подтвержден. Для активации необходимо пройти по ссылке в письме.'
-                } else {
-                    state.loginError = 'Неизвестная ошибка. Попробуйте зайти позже.'
-                }
-
+                return e.body.error
             }
         },
 

@@ -64,9 +64,9 @@
                 valid: false,
                 username: '',
                 password: '',
+                loginError: ''
             }
         },
-        computed: mapState(['loginError']),
 
         methods: {
             ...mapActions(['loginAction']),
@@ -74,9 +74,21 @@
                 let loginForm = new FormData
                 loginForm.append('username', this.username)
                 loginForm.append('password', this.password)
-                await this.loginAction(loginForm)
-                if (!this.loginError) {
-                    window.location.href = '/'
+
+                let error = await this.loginAction(loginForm)
+
+                switch (error) {
+                    case 'Bad credentials':
+                        this.loginError = 'Неверный пароль.'
+                        break
+                    case 'User is disabled':
+                        this.loginError = 'Аккаунт не подтвержден. Для активации необходимо пройти по ссылке в письме.'
+                        break
+                    case null:
+                        window.location.href = '/'
+                        break
+                    default:
+                        this.loginError = 'Неизвестная ошибка. Попробуйте зайти позже.'
                 }
             }
         },
