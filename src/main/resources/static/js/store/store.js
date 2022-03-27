@@ -9,10 +9,6 @@ export default new Vuex.Store({
     state:{
         news: JSON.parse(rowNews),
         principal: JSON.parse(rowPrincipal),
-        registrationForm: {
-            errors: null,
-            user: null
-        },
         loginError: null,
         updateError: null,
     },
@@ -23,10 +19,6 @@ export default new Vuex.Store({
     },
 
     mutations: {
-        addUserMutation(state, form) {
-            state.registrationForm.errors = form.errors
-            state.registrationForm.user = form.user
-        },
 
         loginErrorMutation(state, value) {
             state.loginError = value
@@ -69,9 +61,13 @@ export default new Vuex.Store({
 
     actions: {
         async addUserAction({commit, state}, registrationForm) {
-            const result = await userApi.add(registrationForm)
-            const data = await result.json()
-            await commit('addUserMutation', data)
+            try {
+                await userApi.add(registrationForm)
+                return null
+            } catch (e) {
+                console.log(e)
+                return e.body.errors
+            }
         },
 
         async addUserpicAction({commit, state}, userpic) {

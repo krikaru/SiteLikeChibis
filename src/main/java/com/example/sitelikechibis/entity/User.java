@@ -47,6 +47,10 @@ public class User implements UserDetails {
     @Pattern(regexp = "^\\S+$", groups = {MarkerInterfaces.PasswordUpdate.class})
     private String password;
 
+    @Transient
+    @NotBlank(message = "Повторный пароль должен быть заполнен.", groups = {MarkerInterfaces.PasswordUpdate.class})
+    private String confirmPassword;
+
     @NotBlank(message = "Email должен быть заполнен.", groups = {MarkerInterfaces.EmailUpdate.class})
     @Email(message = "Неверный формат email.", groups = {MarkerInterfaces.EmailUpdate.class})
     @JsonView(Views.FullUserInfo.class)

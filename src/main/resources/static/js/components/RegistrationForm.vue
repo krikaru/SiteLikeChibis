@@ -2,9 +2,6 @@
     <v-container fluid>
         <v-layout align-center justify-center row>
             <v-flex xs6>
-                <v-alert v-if="errors" type="error">
-                    {{this.errors}}
-                </v-alert>
                 <v-card>
                     <v-card-text>
                         <h1 align="center">Регистрация</h1>
@@ -18,25 +15,25 @@
                             <v-layout column>
                                 <v-flex>
                                     <v-text-field
-                                            v-model="username"
+                                            v-model="user.username"
                                             :rules="usernameRules"
                                             label="Логин"
-                                            required
+                                            :error-messages="errors ? findErrorMessage('username') : ''"
+                                            @click="errors ? errors = null : ''"
                                     ></v-text-field>
                                 </v-flex>
 
                                 <v-flex>
                                     <v-text-field
-                                            v-model="name"
+                                            v-model="user.name"
                                             label="Ваше имя"
                                             :rules="nameRules"
-                                            required
                                     ></v-text-field>
                                 </v-flex>
 
                                 <v-flex>
                                     <v-text-field
-                                            v-model="password"
+                                            v-model="user.password"
                                             :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                                             :rules="passwordRules"
                                             :type="showPassword ? 'text' : 'password'"
@@ -44,14 +41,12 @@
                                             hint="At least 8 characters"
                                             counter
                                             @click:append="showPassword = !showPassword"
-                                            required
                                     ></v-text-field>
                                 </v-flex>
 
                                 <v-flex>
                                     <v-text-field
-                                            ref="confirmPasswordRef"
-                                            v-model="confirmPassword"
+                                            v-model="user.confirmPassword"
                                             :append-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
                                             :rules="confirmPasswordRules"
                                             :type="showConfirmPassword ? 'text' : 'password'"
@@ -59,19 +54,20 @@
                                             hint="At least 8 characters"
                                             counter
                                             @click:append="showConfirmPassword = !showConfirmPassword"
-                                            required
                                     ></v-text-field>
                                 </v-flex>
 
                                 <v-flex>
                                     <v-text-field
-                                            v-model="email"
+                                            v-model="user.email"
                                             label="E-mail"
                                             :rules="emailRules"
                                             hint="На указанный e-mail будет выслана ссылка для подтверждения регистрации"
-                                            required
+                                            :error-messages="errors ? findErrorMessage('email') : ''"
+                                            @click="errors ? errors = null : ''"
                                     ></v-text-field>
                                 </v-flex>
+
                                 <v-btn class="mt-6"
                                         :disabled="!valid"
                                         @click="save" >
@@ -80,6 +76,7 @@
                             </v-layout>
                         </v-container>
                     </v-form>
+
                 </v-card>
             </v-flex>
         </v-layout>
@@ -87,10 +84,8 @@
 </template>
 
 <script>
-    import { mapState, mapActions } from 'vuex'
+    import { mapActions } from 'vuex'
     export default {
-
-        computed: mapState(['registrationForm']),
 
         data() {
             return {
@@ -98,85 +93,65 @@
                 valid: true,
                 showPassword: false,
                 showConfirmPassword: false,
-                username: '',
+                user: {
+                    username: '',
+                    name: '',
+                    password: '',
+                    confirmPassword: '',
+                    email: '',
+                },
+
                 usernameRules: [
                     username => !!username || 'Введите логин!',
                     username => username.length >= 3 && username.length <=12 || 'Логин должен быть не меньше 3 и не больше 12 символов',
                     username => this.checkUsername(username) || 'В логине должны быть только латинские буквы и цифры'
                 ],
-                name: '',
+
                 nameRules: [
                     name => !!name || 'Введите своё имя!',
                     name => name.length <= 25 || 'Имя должно быть не больше 25 символов',
                     name => /^[a-zA-Zа-яА-ЯёЁ -]+$/.test(name) || 'Имя должно содержать только буквы'
                 ],
-                password: '',
+
                 passwordRules: [
                     password => !!password || 'Введите пароль!',
                     password => password.length <= 15 || 'Пароль должен быть не больше 25 символов',
                     password => password.length >= 6 || 'Пароль должен быть не меньше 6 символов',
                     password => /^\S+$/.test(password) || 'В пароле не должно быть пробелов'
                 ],
-                confirmPassword: '',
+
                 confirmPasswordRules: [
                     pas2 => !!pas2 || 'Введите повторный пароль!',
-                    pas2 => this.password === pas2 || 'Пароли не совпадают'
+                    pas2 => this.user.password === pas2 || 'Пароли не совпадают'
                 ],
-                email: '',
+
                 emailRules: [
                     email => !!email || 'Введите email!',
                     email => this.checkEmail(email) || 'Неверный формат'
                 ]
             }
         },
-        watch: {
 
-            username: function (newUsername) {
-                this.username = newUsername
-            },
-            name: function (newName) {
-                this.name = newName
-            },
-            password: function (newPassword) {
-                this.$refs.confirmPasswordRef.validate();
-            },
-            email: function (newEmail) {
-                this.email = newEmail
-            },
-
-        },
         methods: {
             ...mapActions(['addUserAction']),
             async save() {
-                const registrationForm = {
-                    user : {
-                            username: this.username,
-                            name: this.name,
-                            password: this.password,
-                            email: this.email
-                        },
-                    confirmPassword: this.confirmPassword
-                }
+                let result = await this.addUserAction(this.user)
 
-                await this.addUserAction(registrationForm)
-
-                const form = this.registrationForm
-
-                if (form.user.id !== null) {
-                    await this.$router.push('login')
-                    this.username = ''
-                    this.name = ''
-                    this.password = ''
-                    this.confirmPassword = ''
-                    this.email = ''
-                    this.errors = null
+                if (result) {
+                    this.errors = result
                 } else {
-                    this.errors = form.errors.usernameError || form.errors.uniqueEmailError
-                    this.confirmPassword = ''
-                    if (form.errors.uniqueEmailError) {
-                        this.email = ''
-                    } else if (form.errors.usernameError)
-                        this.username = ''
+                    this.$refs.registrationForm.reset()
+                    this.errors = null
+                    await this.$router.push('login')
+                }
+            },
+
+            findErrorMessage(fieldName) {
+                let error = this.errors.find(error => error.fieldName === fieldName)
+                if (error) {
+                    return error.message
+                } else {
+                    return ''
                 }
             },
 

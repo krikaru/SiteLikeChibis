@@ -2,9 +2,12 @@ package com.example.sitelikechibis.service;
 
 import com.example.sitelikechibis.entity.Role;
 import com.example.sitelikechibis.entity.User;
-import com.example.sitelikechibis.entity.dto.RegistrationFormDto;
+import com.example.sitelikechibis.entity.dto.ErrorInfo;
 import com.example.sitelikechibis.entity.dto.UpdatedAttributeEntityDto;
+import com.example.sitelikechibis.entity.dto.ValidationErrorResponse;
 import com.example.sitelikechibis.repo.UserRepo;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,38 +35,37 @@ public class UserService implements UserDetailsService {
         return userRepo.findAll();
     }
 
-    public RegistrationFormDto registration(RegistrationFormDto registrationForm, Map<String, String> errors) {
-        User user = registrationForm.getUser();
+    public ResponseEntity<ValidationErrorResponse> registration(User newUser) {
+        ValidationErrorResponse errors = new ValidationErrorResponse();
 
-        boolean isExistsEmail = userRepo.existsByEmail(user.getEmail());
+        boolean isExistsEmail = userRepo.existsByEmail(newUser.getEmail());
         if (isExistsEmail) {
-            errors.put("uniqueEmailError", "Аккаунт с таким email уже существует");
-            return new RegistrationFormDto(user, errors);
+            errors.getErrors().add(new ErrorInfo("email", "Аккаунт с таким email уже существует"));
         }
 
-        User userFromDb = userRepo.findByUsername(user.getUsername());
-        if (userFromDb == null) {
-            String confirmPassword = registrationForm.getConfirmPassword();
-            if (!confirmPassword.equals(user.getPassword())) {
-                errors.put("confirmPasswordError", "Пароли не совпадают");
-                return new RegistrationFormDto(user, errors);
-            }
+        String confirmPassword = newUser.getConfirmPassword();
+        if (!confirmPassword.equals(newUser.getPassword())) {
+            errors.getErrors().add(new ErrorInfo("password", "Пароли не совпадают"));
+        }
 
-            user.setActive(true);
-            user.setUserpic("default.jpg");
-            user.getRoles().add(Role.ADMIN);
-            user.setActivationCode(UUID.randomUUID().toString());
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        User userFromDb = userRepo.findByUsername(newUser.getUsername());
+        if (userFromDb != null) {
+            errors.getErrors().add(new ErrorInfo("username", "Такой логин уже существует. Придумайте другой."));
+        } else if (errors.getErrors().size() == 0){
+            newUser.setActive(false);
+            newUser.setUserpic("default.jpg");
+            newUser.getRoles().add(Role.ADMIN);
+            newUser.setActivationCode(UUID.randomUUID().toString());
+            newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
 
-            User savedUser = userRepo.save(user);
+            User savedUser = userRepo.save(newUser);
 
             sendMessage(savedUser);
 
-            return new RegistrationFormDto(savedUser, errors);
-        } else {
-            errors.put("usernameError", "Такой логин уже существует. Придумайте другой.");
-            return new RegistrationFormDto(user, errors);
+            return new ResponseEntity<>(null, HttpStatus.OK);
         }
+
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
     private void sendMessage(User user) {
