@@ -37,7 +37,7 @@ public class User implements UserDetails {
     @NotBlank(message = "Имя не должно быть пустым.", groups = {MarkerInterfaces.NameUpdate.class})
     @Length(message = "Длина имени должна быть не меньше 3 и не больше 25 символов.", max=25, min = 3, groups = {MarkerInterfaces.NameUpdate.class})
     @Pattern(message = "Имя может содержать только буквы русского и английского алфавита.",
-            regexp = "^[a-zA-Zа-яА-ЯёЁ-]+$",
+            regexp = "^[a-zA-Zа-яА-ЯёЁ -]+$",
             flags = Pattern.Flag.CASE_INSENSITIVE, groups = {MarkerInterfaces.NameUpdate.class})
     @JsonView(Views.BaseUserInfo.class)
     private String name;
@@ -48,7 +48,7 @@ public class User implements UserDetails {
     private String password;
 
     @Transient
-    @NotBlank(message = "Повторный пароль должен быть заполнен.", groups = {MarkerInterfaces.PasswordUpdate.class})
+    @NotBlank(message = "Повторный пароль должен быть заполнен.")
     private String confirmPassword;
 
     @NotBlank(message = "Email должен быть заполнен.", groups = {MarkerInterfaces.EmailUpdate.class})

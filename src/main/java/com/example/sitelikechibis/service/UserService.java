@@ -1,9 +1,10 @@
 package com.example.sitelikechibis.service;
 
+import com.example.sitelikechibis.entity.MarkerInterfaces;
 import com.example.sitelikechibis.entity.Role;
+import com.example.sitelikechibis.entity.UpdatableUserFields;
 import com.example.sitelikechibis.entity.User;
 import com.example.sitelikechibis.entity.dto.ErrorInfo;
-import com.example.sitelikechibis.entity.dto.UpdatedAttributeEntityDto;
 import com.example.sitelikechibis.entity.dto.ValidationErrorResponse;
 import com.example.sitelikechibis.repo.UserRepo;
 import org.springframework.http.HttpStatus;
@@ -14,20 +15,24 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @Service
 public class UserService implements UserDetailsService {
     private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
     private final MailService mailSender;
+    private final Validator validator;
 
-    public UserService(UserRepo userRepo, PasswordEncoder passwordEncoder, MailService mailSender) {
+    public UserService(UserRepo userRepo, PasswordEncoder passwordEncoder, MailService mailSender, Validator validator) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.mailSender = mailSender;
+        this.validator = validator;
     }
 
 
@@ -77,26 +82,45 @@ public class UserService implements UserDetailsService {
         mailSender.send(user.getEmail(), "Activation code", message);
     }
 
-    public User update(User user, UpdatedAttributeEntityDto<User> updatedUser) {
-        switch (updatedUser.getNameAttribute()) {
-            case "name":
-                user.setName(updatedUser.getUpdatedEntity().getName());
-                break;
-            case "password":
-                user.setPassword(updatedUser.getUpdatedEntity().getPassword());
-                break;
-            case "email":
-                user.setEmail(updatedUser.getUpdatedEntity().getEmail());
-                break;
-            case "userpic":
-                user.setUserpic(updatedUser.getUpdatedEntity().getUserpic());
-            default:
-                break;
+    public ValidationErrorResponse update(User updatedUser, String nameField) {
+        User userFromDb = userRepo.findById(updatedUser.getId()).get();
+
+        Set<ConstraintViolation<User>> validateError = validateAttribute(updatedUser, nameField);
+
+        ValidationErrorResponse userDto = new ValidationErrorResponse();
+        if (validateError.size() == 0) {
+            saveUpdateAttribute(userFromDb::setName, updatedUser::getName, userFromDb);
+        } else {
+            ArrayList<ErrorInfo> errors = new ArrayList<>();
+            for (ConstraintViolation<User> violation: validateError) {
+                errors.add(new ErrorInfo(violation.getPropertyPath().toString(), violation.getMessage()));
+            }
+            userDto.setErrors(errors);
         }
 
-        userRepo.save(user);
+        return userDto;
+    }
 
-        return user;
+    private Set<ConstraintViolation<User>> validateAttribute(User updatedUser, String nameField) {
+        Set<ConstraintViolation<User>> validate = null;
+        switch (UpdatableUserFields.valueOf(nameField.toUpperCase())) {
+            case NAME:
+                validate = validator.validate(updatedUser, MarkerInterfaces.NameUpdate.class);
+                break;
+            case PASSWORD:
+                validate = validator.validate(updatedUser, MarkerInterfaces.PasswordUpdate.class);
+                if (validate.size() == 0) updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+                break;
+            case EMAIL:
+                validate = validator.validate(updatedUser, MarkerInterfaces.EmailUpdate.class);
+                break;
+        }
+        return validate;
+    }
+
+    private void saveUpdateAttribute(Consumer<String> setMethod, Supplier<String> getMethod, User userFromDb) {
+        setMethod.accept(getMethod.get());
+        userRepo.save(userFromDb);
     }
 
     public void delete(User user) {
