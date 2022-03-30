@@ -5,8 +5,10 @@ import com.example.sitelikechibis.entity.Role;
 import com.example.sitelikechibis.entity.UpdatableUserFields;
 import com.example.sitelikechibis.entity.User;
 import com.example.sitelikechibis.entity.dto.ErrorInfo;
+import com.example.sitelikechibis.entity.dto.UpdatedUserpicDto;
 import com.example.sitelikechibis.entity.dto.ValidationErrorResponse;
 import com.example.sitelikechibis.repo.UserRepo;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,12 +16,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -27,6 +30,9 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final MailService mailSender;
     private final Validator validator;
+
+    @Value("${upload.path}")
+    private String uploadPath;
 
     public UserService(UserRepo userRepo, PasswordEncoder passwordEncoder, MailService mailSender, Validator validator) {
         this.userRepo = userRepo;
@@ -82,23 +88,27 @@ public class UserService implements UserDetailsService {
         mailSender.send(user.getEmail(), "Activation code", message);
     }
 
-    public ValidationErrorResponse update(User updatedUser, String nameField) {
+    public ResponseEntity<ValidationErrorResponse> update(User updatedUser, String nameField) {
         User userFromDb = userRepo.findById(updatedUser.getId()).get();
 
         Set<ConstraintViolation<User>> validateError = validateAttribute(updatedUser, nameField);
 
-        ValidationErrorResponse userDto = new ValidationErrorResponse();
+        ValidationErrorResponse errorResponse = new ValidationErrorResponse();
+        ResponseEntity<ValidationErrorResponse> responseEntity;
+
         if (validateError.size() == 0) {
-            saveUpdateAttribute(userFromDb::setName, updatedUser::getName, userFromDb);
+            saveUpdateAttribute(userFromDb, updatedUser, nameField);
+            responseEntity = new ResponseEntity<>(errorResponse, HttpStatus.OK);
         } else {
             ArrayList<ErrorInfo> errors = new ArrayList<>();
             for (ConstraintViolation<User> violation: validateError) {
                 errors.add(new ErrorInfo(violation.getPropertyPath().toString(), violation.getMessage()));
             }
-            userDto.setErrors(errors);
+            errorResponse.setErrors(errors);
+            responseEntity = new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
 
-        return userDto;
+        return responseEntity;
     }
 
     private Set<ConstraintViolation<User>> validateAttribute(User updatedUser, String nameField) {
@@ -109,7 +119,6 @@ public class UserService implements UserDetailsService {
                 break;
             case PASSWORD:
                 validate = validator.validate(updatedUser, MarkerInterfaces.PasswordUpdate.class);
-                if (validate.size() == 0) updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
                 break;
             case EMAIL:
                 validate = validator.validate(updatedUser, MarkerInterfaces.EmailUpdate.class);
@@ -118,13 +127,19 @@ public class UserService implements UserDetailsService {
         return validate;
     }
 
-    private void saveUpdateAttribute(Consumer<String> setMethod, Supplier<String> getMethod, User userFromDb) {
-        setMethod.accept(getMethod.get());
+    private void saveUpdateAttribute(User userFromDb, User updatedUser, String nameField) {
+        switch (UpdatableUserFields.valueOf(nameField.toUpperCase())) {
+            case NAME:
+                userFromDb.setName(updatedUser.getName());
+                break;
+            case PASSWORD:
+                userFromDb.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+                break;
+            case EMAIL:
+                userFromDb.setEmail(updatedUser.getEmail());
+                break;
+        }
         userRepo.save(userFromDb);
-    }
-
-    public void delete(User user) {
-        userRepo.delete(user);
     }
 
     @Override
@@ -150,5 +165,51 @@ public class UserService implements UserDetailsService {
         } else {
             return false;
         }
+    }
+
+    public ResponseEntity<UpdatedUserpicDto> updateUserpic(Long id, MultipartFile userpic) throws IOException {
+        User userFromDb = userRepo.findById(id).get();
+
+        UpdatedUserpicDto userpicDto = new UpdatedUserpicDto();
+        ResponseEntity<UpdatedUserpicDto> responseEntity;
+
+        if (userpic.getSize() < 5242880) {
+            saveUserpic(userpic, userFromDb);
+            userpicDto.setUserpicName(userFromDb.getUserpic());
+            responseEntity = new ResponseEntity<>(userpicDto, HttpStatus.OK);
+
+        } else if ("image/jpeg".equals(userpic.getContentType()) || "image/png".equals(userpic.getContentType())) {
+            ArrayList<ErrorInfo> errors = new ArrayList<>();
+            errors.add(new ErrorInfo("userpic", "Неверный формат файла!"));
+            userpicDto.setErrors(errors);
+            responseEntity = new ResponseEntity<>(userpicDto, HttpStatus.BAD_REQUEST);
+        } else {
+            ArrayList<ErrorInfo> errors = new ArrayList<>();
+            errors.add(new ErrorInfo("userpic", "Размер аватара не должен превышать 5Мб!"));
+            userpicDto.setErrors(errors);
+            responseEntity = new ResponseEntity<>(userpicDto, HttpStatus.BAD_REQUEST);
+        }
+        return responseEntity;
+    }
+
+    private boolean saveUserpic(MultipartFile userpic, User updatedUser) throws IOException {
+        if (userpic != null && !Objects.requireNonNull(userpic.getOriginalFilename()).isEmpty()) {
+            File uploadDir = new File(uploadPath);
+
+            if (!uploadDir.exists()) {
+                uploadDir.mkdir();
+            }
+
+            String uuidFile = UUID.randomUUID().toString();
+            String resultFileName = uuidFile + "." + userpic.getOriginalFilename();
+
+            userpic.transferTo(new File(uploadPath + "/" + resultFileName));
+
+            updatedUser.setUserpic(resultFileName);
+            userRepo.save(updatedUser);
+
+            return true;
+        }
+        return false;
     }
 }

@@ -1,9 +1,6 @@
 package com.example.sitelikechibis.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -12,7 +9,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -68,10 +67,11 @@ public class User implements UserDetails {
     @JsonView(Views.FullUserInfo.class)
     private List<News> news;
 
-    @NotBlank(message = "Файл не выбран!Выберите файл.", groups = {MarkerInterfaces.UserpicUpdate.class})
-//    @Size(message = "Размер аватара не должен превышать 10Мб!", groups = {MarkerInterfaces.UserpicUpdate.class})
+    @NotBlank(message = "Файл не выбран!Выберите файл.")
     @JsonView(Views.FullUserInfo.class)
     private String userpic;
+
+    private static final long serialVersionUID = 3075591059030307505L;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

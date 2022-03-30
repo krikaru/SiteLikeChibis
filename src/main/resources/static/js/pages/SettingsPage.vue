@@ -3,9 +3,7 @@
         <v-layout align-start justify-space-around row>
             <v-flex xs11>
                 <v-card>
-                    <v-tabs
-                            vertical
-                    >
+                    <v-tabs vertical>
                         <v-tab>
                             <v-icon left>
                                 mdi-account
@@ -13,7 +11,7 @@
                             Личные данные
                         </v-tab>
                         <v-tab-item>
-                            <personal-settings :principal="this.principal"></personal-settings>
+                            <personal-settings></personal-settings>
                         </v-tab-item>
 
                         <v-tab>
@@ -24,11 +22,6 @@
                         </v-tab>
                         <v-tab-item>
                             <delete-settings></delete-settings>
-                        </v-tab-item>
-
-                        <v-tab style="color: red">Удаление аккаунта</v-tab>
-                        <v-tab-item>
-                            <delete-settings :principal="this.principal"></delete-settings>
                         </v-tab-item>
                     </v-tabs>
                 </v-card>
@@ -45,11 +38,10 @@
 
 <script>
     import { mapState } from 'vuex'
-    import PersonalSettings from 'components/profileSettings/PersonalSettings.vue';
-    import DeleteSettings from 'components/profileSettings/DeleteSettings.vue';
+    import PersonalSettings from 'components/profileSettings/PersonalSettings.vue'
     export default {
         name: "SettingsPage",
-        components: {DeleteSettings, PersonalSettings },
+        components: { PersonalSettings },
         computed: {
             ...mapState(['principal']),
         },

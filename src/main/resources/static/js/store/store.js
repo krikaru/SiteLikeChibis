@@ -9,7 +9,6 @@ export default new Vuex.Store({
     state:{
         news: JSON.parse(rowNews),
         principal: JSON.parse(rowPrincipal),
-        updateError: null,
     },
 
     getters: {
@@ -18,30 +17,14 @@ export default new Vuex.Store({
 
     mutations: {
 
-        loginErrorMutation(state, value) {
-            state.loginError = value
-        },
-        loginMutation(state, loginForm) {
-            state.rowPrincipal = loginForm
-        },
         updateProfileMutation(state, updatedUserInfo) {
-            if (updatedUserInfo.errors === null) {
-                switch (updatedUserInfo.nameAttribute) {
-                    case 'name':
-                        state.principal.name = updatedUserInfo.updatedUser.name
-                        break
-                    case 'password':
-                        state.principal.password = updatedUserInfo.updatedUser.password
-                        break
-                    case 'email':
-                        state.principal.email = updatedUserInfo.updatedUser.email
-                        break
-                    case 'userpic':
-                        state.principal.userpic = updatedUserInfo.updatedUser.userpic
-                }
-            } else {
-                state.updateError = updatedUserInfo.errors
+            if (!!!updatedUserInfo.updatedUser.password) {
+                Object.assign(state.principal, updatedUserInfo.updatedUser)
             }
+        },
+
+        updateUserpicMutation(state, userpicName) {
+            state.principal.userpic = userpicName
         },
 
         likeMutation(state, news) {
@@ -63,16 +46,10 @@ export default new Vuex.Store({
                 await userApi.add(registrationForm)
                 return null
             } catch (e) {
-                console.log(e)
                 return e.body.errors
             }
         },
 
-        async addUserpicAction({commit, state}, userpic) {
-            const result = await userApi.addUserpic(userpic)
-            const data = await result.json()
-            return data;
-        },
 
         async loginAction({commit, state}, loginForm) {
             try{
@@ -84,17 +61,22 @@ export default new Vuex.Store({
         },
 
         async updateProfileAction({commit, state}, updatedUserInfo) {
-            const result = await userApi.updateUser(updatedUserInfo)
-            const data = await result.json()
-            await commit('updateProfileMutation', data)
-            return data
+            try {
+                await userApi.updateUser(updatedUserInfo)
+                return null
+            } catch (e) {
+                return e.body.errors
+            }
         },
 
         async updateUserpicAction({commit, state}, updateInfo) {
-            const result = await userApi.updateUserpic(updateInfo)
-            const data = await result.json()
-            await commit('updateProfileMutation', data)
-            return data
+            try {
+                let result = await userApi.updateUserpic(updateInfo)
+                await commit('updateUserpicMutation', result.body.userpicName)
+                return null
+            } catch (e) {
+                return e.body.errors
+            }
         },
 
         async likeAction({commit, state}, newsId) {

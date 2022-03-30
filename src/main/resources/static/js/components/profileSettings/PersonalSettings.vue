@@ -9,7 +9,8 @@
             <settings-dialog v-for="(item, index) in personalSettingsList"
                              :key="index"
                              :item="item"
-                             :submitFunction="update(item.propName)"
+                             :setUpdatedAttribute="setUpdatedAttribute"
+                             :updateFunction="updateFunction"
             >
             </settings-dialog>
 
@@ -49,119 +50,55 @@
 
 <script>
     import SettingsDialog from './SettingsDialog.vue'
-    import { mapActions } from "vuex";
+    import Dialog from 'util/dialogs.js'
+    import { mapActions, mapMutations } from 'vuex'
     export default {
         name: "PersonalSettings",
-        props: ['principal'],
         components: { SettingsDialog },
         data() {
             return {
-                personalSettingsList: [
-                    {
-                        title: 'Изменить имя', subtitle: 'Имя, которое видят другие пользователи',
-                        dialogTitle:'Изменить имя', fieldLabel: 'Введите новое имя',
-                        rules: this.nameRules, dialog: '', propName: 'name'
-                    },
-                    {
-                        title: 'Добавить/изменить фото профиля', subtitle: null,
-                        dialogTitle:'Добавить/изменить фото профиля', fileInput: 'Загрузить новое фото',
-                        rules: this.userpicRules, dialog: '', propName: 'userpic'
-                    },
-                    {
-                        title: 'Изменить e-mail', subtitle: 'На этот e-mail будут приходить все новости',
-                        dialogTitle:'Изменить e-mail', fieldLabel: 'Введите новый e-mail',
-                        rules: this.emailRules, dialog: '', propName: 'email'
-                    },
-                    {
-                        title: 'Изменить пароль', subtitle: null,
-                        dialogTitle:'Изменить пароль', fieldLabel: 'Введите новый пароль',
-                        rules: this.nameRules, dialog: '', propName: 'password'
-                    }
-                ],
+                personalSettingsList: Dialog.personalSettingsList
             }
         },
+
         methods: {
             ...mapActions(['updateProfileAction', 'updateUserpicAction']),
-            nameRules () {
-                return [
-                    name => !!name || 'Введите своё имя!',
-                    name => name !== this.principal.name || 'Новое имя совпадает со старым',
-                    name => name.length <= 25 || 'Имя должно быть не больше 25 символов',
-                    name => name.length >= 3 || 'Имя должно быть не меньше 3 символов',
-                    name => /^[a-zA-Zа-яА-ЯёЁ-]+$/.test(name) || 'Имя должно содержать только буквы'
-                ]
-            },
-            emailRules () {
-                return [
-                    email => !!email || 'Введите email!',
-                    email => this.checkEmail(email) || 'Неверный формат'
-                ]
-            },
-            checkEmail(email) {
-                const regExpEmail = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                return regExpEmail.test(String(email).toLowerCase());
-            },
-            passwordRules() {
-                return [
-                    password => !!password || 'Введите пароль!',
-                    password => password.length <= 15 || 'Пароль должен быть не больше 25 символов',
-                    password => password.length >= 6 || 'Пароль должен быть не меньше 6 символов',
-                    password => /^\S+$/.test(password) || 'В пароле не должно быть пробелов'
-                ]
-            },
-
-            userpicRules() {
-                return [
-                    userpic => !!userpic || 'Фото не добавлено!',
-                    userpic => !userpic || userpic.size < 5000000 || 'Размер фото не должен превышать 5 MB!',
-                    userpic => (userpic !== null && (userpic.type==='image/jpeg' || userpic.type==='image/png')) || 'Неверное расширение файла'
-                ]
-            },
-
-            update(propName) {
-                if (propName === 'userpic') {
-                    return this.updateUserpic
+            ...mapMutations(['updateProfileMutation']),
+            async updateFunction(updatedUserInfo) {
+                let errors
+                if (updatedUserInfo.propName === 'userpic' ) {
+                    errors = await this.updateUserpicAction(updatedUserInfo.updatedUser)
                 } else {
-                    return this.updateInfo
+                    updatedUserInfo.updatedUser.userpic = ''
+                    errors = await this.updateProfileAction(updatedUserInfo)
+                    if (!!!errors) {
+                        this.updateProfileMutation(updatedUserInfo)
+                    }
                 }
+                return errors
             },
 
-            updateInfo(newValue, propName) {
-                const updatedUserInfo = {
-                    updatedUser: {
-                        id: this.$route.params.id,
-                    },
-                    nameAttribute: propName
-                }
-                this.setUpdatedAttribute(updatedUserInfo, newValue)
-
-                let updateData = this.updateProfileAction(updatedUserInfo)
-                return updateData
-            },
-
-            updateUserpic(newPic, propName=null) {
-                const userpic = new FormData()
-                userpic.set("userpic", newPic);
-                let updateData = this.updateUserpicAction({userpic, id: this.$route.params.id})
-                return updateData
-            },
-
-            setUpdatedAttribute(updatedUserInfo, newValue) {
-                switch (updatedUserInfo.nameAttribute) {
+            setUpdatedAttribute(thisDialog) {
+                switch (thisDialog.item.propName) {
                     case 'name':
-                        updatedUserInfo.updatedUser.name = newValue
+                        thisDialog.updatedUser.name = thisDialog.newValue
                         break
                     case 'password':
-                        updatedUserInfo.updatedUser.password = newValue
+                        thisDialog.updatedUser.password = thisDialog.newValue
                         break
                     case 'email':
-                        updatedUserInfo.updatedUser.email = newValue
-                    case 'userpic':
-                        updatedUserInfo.updatedUser.userpic = newValue
+                        thisDialog.updatedUser.email = thisDialog.newValue
+                        break
+                    case "userpic":
+                        const userpic = new FormData()
+                        userpic.set("userpic", thisDialog.image);
+                        thisDialog.updatedUser.userpic = userpic
                         break
                 }
-            }
-        }
+
+                thisDialog.updatedUser.id = thisDialog.$route.params.id
+            },
+        },
     }
 </script>
 
