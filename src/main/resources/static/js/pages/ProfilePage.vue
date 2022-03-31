@@ -33,7 +33,7 @@
                 </v-flex>
                 <v-flex xs8>
                     <v-card>
-                        <v-card-title style="background-color: #ff9363">
+                        <v-card-title style="background-color: lightskyblue">
                             Ваши заявки
                         </v-card-title>
                         <v-divider></v-divider>
@@ -48,23 +48,11 @@
 </template>
 
 <script>
-    import { mapState, mapActions } from 'vuex'
+    import { mapState } from 'vuex'
     export default {
         name: "ProfilePage",
-        data() {
-            return {
-                userpic: ''
-            }
-        },
+
         computed: mapState(['principal']),
-        methods: {
-            ...mapActions(['addUserpicAction']),
-            submitUserpic() {
-                let pic = new FormData;
-                pic.set('userpic', this.userpic);
-                this.addUserpicAction(pic)
-            }
-        }
     }
 </script>
 

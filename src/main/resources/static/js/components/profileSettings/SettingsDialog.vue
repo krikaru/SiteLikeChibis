@@ -65,8 +65,7 @@
                                 :disabled="!valid"
                                 @click="submit"
                         >
-                            <span v-if="item.submitMsg">Удалить</span>
-                            <span v-else>Сохранить</span>
+                            <span>Сохранить</span>
                         </v-btn>
                     </v-card-actions>
                 </v-container>

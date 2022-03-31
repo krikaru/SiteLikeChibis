@@ -1,20 +1,17 @@
 package com.example.sitelikechibis.entity;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.http.ResponseEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Data
@@ -52,7 +49,6 @@ public class News implements Serializable {
     )
     @JsonView(Views.FullNews.class)
     private Set<User> likes = new HashSet<>();
-
 
     private static final long serialVersionUID = -6502367144872682228L;
 }

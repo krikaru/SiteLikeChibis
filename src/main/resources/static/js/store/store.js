@@ -19,6 +19,7 @@ export default new Vuex.Store({
 
         updateProfileMutation(state, updatedUserInfo) {
             if (!!!updatedUserInfo.updatedUser.password) {
+                updatedUserInfo.updatedUser.userpic = state.principal.userpic
                 Object.assign(state.principal, updatedUserInfo.updatedUser)
             }
         },
@@ -106,8 +107,8 @@ export default new Vuex.Store({
             try {
                 const result = await newsApi.add(news)
                 const data = await result.json()
-                await commit('addNewsMutation', data.updatedEntity)
-                return data.errors
+                await commit('addNewsMutation', data.entity)
+                return null
             } catch (e) {
                 return e.body.errors
             }

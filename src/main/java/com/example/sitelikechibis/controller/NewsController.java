@@ -1,17 +1,14 @@
 package com.example.sitelikechibis.controller;
 
-import com.example.sitelikechibis.controller.util.ControllerUtils;
 import com.example.sitelikechibis.entity.News;
 import com.example.sitelikechibis.entity.User;
 import com.example.sitelikechibis.entity.Views;
-import com.example.sitelikechibis.entity.dto.UpdatedAttributeEntityDto;
+import com.example.sitelikechibis.entity.dto.UpdatedEntityDto;
 import com.example.sitelikechibis.service.NewsService;
-import com.example.sitelikechibis.service.UserService;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -28,11 +25,11 @@ public class NewsController {
 
     @PostMapping
     @JsonView(Views.FullNews.class)
-    public UpdatedAttributeEntityDto<News> create(
+    public UpdatedEntityDto<News> create(
             @RequestBody @Valid News news,
             @AuthenticationPrincipal User principal
     ) {
-        return new UpdatedAttributeEntityDto<>(newsService.create(news, principal), null, null);
+        return new UpdatedEntityDto<>(newsService.create(news, principal), null);
     }
 
     @PutMapping("{id}")
